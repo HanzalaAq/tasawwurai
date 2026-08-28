@@ -1,0 +1,20 @@
+{
+  "type": "physics.projectile",
+  "subject": "physics",
+  "name": "Projectile Motion Simulator",
+  "description": "Interactive 2D projectile trajectory with velocity vectors, max height, range annotations, and ghost positions. Shows physically correct kinematic motion.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "velocity": { "type": "number", "default": 20, "min": 1, "max": 100, "unit": "m/s", "description": "Initial launch velocity" },
+      "angle": { "type": "number", "default": 45, "min": 0, "max": 90, "unit": "degrees", "description": "Launch angle from horizontal (0=flat, 90=straight up)" },
+      "gravity": { "type": "number", "default": 9.81, "min": 0.1, "max": 25, "unit": "m/s²", "description": "Gravitational acceleration (Earth=9.81, Moon=1.62, Mars=3.72)" },
+      "showVectors": { "type": "boolean", "default": true, "description": "Show velocity component vectors (vx, vy) and resultant vector" },
+      "showTrajectory": { "type": "boolean", "default": true, "description": "Show the full trajectory preview arc" },
+      "animationSpeed": { "type": "number", "default": 1.0, "min": 0.1, "max": 3.0, "description": "Animation playback speed multiplier" }
+    },
+    "required": ["velocity", "angle"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

@@ -1,0 +1,19 @@
+{
+  "type": "cs.bfs_dfs",
+  "subject": "computer_science",
+  "name": "BFS/DFS Graph Traversal",
+  "description": "Visualize breadth-first and depth-first search on a graph. Shows visited nodes, queue/stack state, and traversal order.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "algorithm": { "type": "string", "default": "bfs", "description": "Algorithm: bfs, dfs" },
+      "startNode": { "type": "string", "default": "A", "description": "Starting node label" },
+      "nodes": { "type": "array", "default": ["A", "B", "C", "D", "E", "F"], "description": "Graph node labels" },
+      "edges": { "type": "array", "default": [["A","B"], ["A","C"], ["B","D"], ["C","E"], ["D","F"]], "description": "Graph edges as [from, to] pairs" },
+      "speed": { "type": "number", "default": 1.0, "min": 0.1, "max": 5.0 }
+    },
+    "required": ["algorithm", "startNode"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

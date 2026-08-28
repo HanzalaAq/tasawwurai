@@ -1,0 +1,20 @@
+{
+  "type": "math.function_graph",
+  "subject": "mathematics",
+  "name": "Function Graph Plotter",
+  "description": "Plot mathematical functions with adjustable domain, range, and styling. Supports polynomials, trigonometric, and exponential functions.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "expression": { "type": "string", "default": "x^2", "description": "Mathematical expression to plot (e.g. x^2, sin(x), 2x+1)" },
+      "xMin": { "type": "number", "default": -10, "min": -100, "max": 0, "description": "Minimum x value" },
+      "xMax": { "type": "number", "default": 10, "min": 0.1, "max": 100, "description": "Maximum x value" },
+      "color": { "type": "string", "default": "#3b82f6", "description": "Line color" },
+      "showGrid": { "type": "boolean", "default": true },
+      "showDerivative": { "type": "boolean", "default": false, "description": "Overlay the derivative" }
+    },
+    "required": ["expression"]
+  },
+  "capabilities": { "interactive": true, "animated": false, "3d": false },
+  "technology": "canvas-2d"
+}

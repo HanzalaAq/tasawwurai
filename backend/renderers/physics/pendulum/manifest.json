@@ -1,0 +1,18 @@
+{
+  "type": "physics.pendulum",
+  "subject": "physics",
+  "name": "Simple Pendulum",
+  "description": "Oscillating pendulum with adjustable length, gravity, and initial angle.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "length": { "type": "number", "default": 2.0, "min": 0.1, "max": 10, "unit": "m" },
+      "gravity": { "type": "number", "default": 9.81, "min": 0.1, "max": 25, "unit": "m/s²" },
+      "initialAngle": { "type": "number", "default": 30, "min": 1, "max": 170, "unit": "degrees" },
+      "damping": { "type": "number", "default": 0, "min": 0, "max": 1, "unit": "coefficient" }
+    },
+    "required": ["length", "initialAngle"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

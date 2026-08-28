@@ -1,0 +1,18 @@
+{
+  "type": "physics.free_fall",
+  "subject": "physics",
+  "name": "Free Fall Simulator",
+  "description": "Object falling under gravity with air resistance. Shows position, velocity, and acceleration over time.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "height": { "type": "number", "default": 100, "min": 1, "max": 1000, "unit": "m" },
+      "gravity": { "type": "number", "default": 9.81, "min": 0.1, "max": 25, "unit": "m/s²" },
+      "airResistance": { "type": "number", "default": 0, "min": 0, "max": 1, "unit": "coefficient" },
+      "mass": { "type": "number", "default": 1, "min": 0.01, "max": 1000, "unit": "kg" }
+    },
+    "required": ["height"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

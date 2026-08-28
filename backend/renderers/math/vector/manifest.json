@@ -1,0 +1,18 @@
+{
+  "type": "math.vector",
+  "subject": "mathematics",
+  "name": "Vector Visualizer",
+  "description": "2D vector operations: addition, subtraction, scaling, dot product, and magnitude visualization.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "vectorA": { "type": "object", "default": { "x": 3, "y": 4 }, "description": "First vector {x, y}" },
+      "vectorB": { "type": "object", "default": { "x": 1, "y": 2 }, "description": "Second vector {x, y}" },
+      "operation": { "type": "string", "default": "add", "description": "Operation: add, subtract, scale, dot" },
+      "scalar": { "type": "number", "default": 1, "min": -5, "max": 5, "description": "Scalar for scale operation" }
+    },
+    "required": ["vectorA", "operation"]
+  },
+  "capabilities": { "interactive": true, "animated": false, "3d": false },
+  "technology": "svg"
+}

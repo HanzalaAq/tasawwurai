@@ -1,0 +1,19 @@
+{
+  "type": "chemistry.atomic_structure",
+  "subject": "chemistry",
+  "name": "Atomic Structure",
+  "description": "Interactive atomic model showing electron shells, protons, and neutrons. Supports Bohr model and orbital view.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "element": { "type": "string", "default": "C", "description": "Element symbol (H, He, Li, C, O, Na, Fe, etc.)" },
+      "model": { "type": "string", "default": "bohr", "description": "Model type: bohr, orbital" },
+      "showElectronPaths": { "type": "boolean", "default": true },
+      "animateElectrons": { "type": "boolean", "default": true },
+      "highlightShell": { "type": "number", "default": -1, "description": "Shell number to highlight (-1 for none)" }
+    },
+    "required": ["element"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

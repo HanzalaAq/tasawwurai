@@ -1,0 +1,18 @@
+{
+  "type": "math.derivative",
+  "subject": "mathematics",
+  "name": "Derivative Visualizer",
+  "description": "Shows a function alongside its tangent line and derivative. Demonstrates the geometric meaning of differentiation.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "expression": { "type": "string", "default": "x^3 - 3x", "description": "The function to differentiate" },
+      "point": { "type": "number", "default": 1.0, "min": -10, "max": 10, "description": "The x-point where the tangent line is shown" },
+      "xMin": { "type": "number", "default": -5, "min": -100, "max": 0 },
+      "xMax": { "type": "number", "default": 5, "min": 0.1, "max": 100 }
+    },
+    "required": ["expression", "point"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

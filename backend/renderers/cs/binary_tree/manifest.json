@@ -1,0 +1,18 @@
+{
+  "type": "cs.binary_tree",
+  "subject": "computer_science",
+  "name": "Binary Tree Visualizer",
+  "description": "Interactive binary tree with insert, delete, and traversal animations (inorder, preorder, postorder).",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "values": { "type": "array", "default": [50, 30, 70, 20, 40, 60, 80], "description": "Array of values to build the tree" },
+      "traversal": { "type": "string", "default": "none", "description": "Traversal type: inorder, preorder, postorder, none" },
+      "highlightNode": { "type": "number", "default": -1, "description": "Value of node to highlight (-1 for none)" },
+      "operation": { "type": "string", "default": "display", "description": "Current operation: display, insert, delete, search" }
+    },
+    "required": ["values"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

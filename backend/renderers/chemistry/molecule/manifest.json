@@ -1,0 +1,19 @@
+{
+  "type": "chemistry.molecule",
+  "subject": "chemistry",
+  "name": "Molecule Viewer",
+  "description": "3D molecular structure visualization with atom labels, bond types, and rotation. Supports common molecules and custom atom arrangements.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "molecule": { "type": "string", "default": "H2O", "description": "Molecule identifier: H2O, CO2, CH4, NH3, C6H6, NaCl, custom" },
+      "showBondAngles": { "type": "boolean", "default": false },
+      "showAtomLabels": { "type": "boolean", "default": true },
+      "rotationSpeed": { "type": "number", "default": 0.5, "min": 0, "max": 3.0 },
+      "style": { "type": "string", "default": "ball_and_stick", "description": "Render style: ball_and_stick, space_filling, wireframe" }
+    },
+    "required": ["molecule"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": true },
+  "technology": "three-js"
+}

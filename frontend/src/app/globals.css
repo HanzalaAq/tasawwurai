@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+:root {
+  --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, monospace;
+}
+
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+/* KaTeX overrides for dark theme */
+.katex {
+  color: #a7f3d0;
+  font-size: 0.95em;
+}
