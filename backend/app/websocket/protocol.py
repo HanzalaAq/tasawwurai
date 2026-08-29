@@ -124,6 +124,22 @@ class ErrorMessage(BaseModel):
     message: str
 
 
+class ImageCommandMessage(BaseModel):
+    """
+    Command to display an AI-generated image.
+
+    Sent when the AI planner determines that an illustrative image
+    is more appropriate than (or complementary to) an interactive simulation.
+    """
+
+    type: Literal["image_command"]
+    prompt: str
+    image_url: str
+    subject: str
+    concept: str
+    timestamp: float
+
+
 class PongMessage(BaseModel):
     """Heartbeat pong response."""
 
@@ -138,6 +154,7 @@ ClientMessage = PingMessage | ParameterChangeMessage | SessionControlMessage | T
 ServerMessage = (
     TranscriptSegmentMessage
     | VisualizationCommandMessage
+    | ImageCommandMessage
     | ErrorMessage
     | PongMessage
 )

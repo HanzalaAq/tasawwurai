@@ -18,18 +18,22 @@ import PlaceholderRenderer from "./PlaceholderRenderer";
 // --- Production Renderers ---
 import ProjectileRenderer from "./physics/projectile/ProjectileRenderer";
 import projectileManifest from "./physics/projectile/manifest.json";
+import WaveRenderer from "./physics/wave/WaveRenderer";
+import waveManifest from "./physics/wave/manifest.json";
+import FunctionGraphRenderer from "./math/function_graph/FunctionGraphRenderer";
+import functionGraphManifest from "./math/function_graph/manifest.json";
 
 // --- Register Production Renderers ---
 registry.register(projectileManifest as any, ProjectileRenderer);
+registry.register(waveManifest as any, WaveRenderer);
+registry.register(functionGraphManifest as any, FunctionGraphRenderer);
 
 // --- Register Placeholder Renderers for all other types ---
 // These will be replaced with production implementations over time.
 
 const placeholderTypes = [
-  { type: "physics.wave", subject: "physics", name: "Wave Simulation" },
   { type: "physics.free_fall", subject: "physics", name: "Free Fall Simulator" },
   { type: "physics.pendulum", subject: "physics", name: "Simple Pendulum" },
-  { type: "math.function_graph", subject: "mathematics", name: "Function Graph Plotter" },
   { type: "math.derivative", subject: "mathematics", name: "Derivative Visualizer" },
   { type: "math.vector", subject: "mathematics", name: "Vector Visualizer" },
   { type: "cs.binary_tree", subject: "computer_science", name: "Binary Tree" },

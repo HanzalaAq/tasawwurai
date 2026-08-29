@@ -9,6 +9,7 @@
 
 export type VisualizationAction = "new" | "update" | "none";
 export type SessionAction = "start" | "pause" | "resume" | "end";
+export type RenderMode = "simulation" | "image" | "both";
 
 // --- Server → Client Messages ---
 
@@ -37,6 +38,16 @@ export interface VisualizationCommandMessage {
   concept: string;
   visualization: VisualizationPayload;
   theory: TheoryBlock;
+  render_mode: RenderMode;
+  timestamp: number;
+}
+
+export interface ImageCommandMessage {
+  type: "image_command";
+  prompt: string;
+  image_url: string;
+  subject: string;
+  concept: string;
   timestamp: number;
 }
 
@@ -62,6 +73,7 @@ export interface PongMessage {
 /** Union of all messages the server can send. */
 export type ServerMessage =
   | VisualizationCommandMessage
+  | ImageCommandMessage
   | TranscriptSegmentMessage
   | ErrorMessage
   | PongMessage;

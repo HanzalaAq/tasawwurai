@@ -190,9 +190,21 @@ async def handle_message(
 
         # Process through AI planner if available
         if planner:
-            command = await planner.plan(session_id, text)
-            if command:
-                await conn_manager.send_json(session_id, websocket, command)
+            logger.info("Processing transcript: session=%s text='%s'", session_id, text[:80])
+            result = await planner.plan(session_id, text)
+            if result:
+                # planner.plan() returns a single dict or a list of dicts (for "both" mode)
+                if isinstance(result, list):
+                    for command in result:
+                        cmd_type = command.get("type", "unknown")
+                        logger.info("Sending %s to frontend (session=%s)", cmd_type, session_id)
+                        await conn_manager.send_json(session_id, websocket, command)
+                else:
+                    cmd_type = result.get("type", "unknown")
+                    logger.info("Sending %s to frontend (session=%s)", cmd_type, session_id)
+                    await conn_manager.send_json(session_id, websocket, result)
+            else:
+                logger.info("Planner returned None — no visualization change (session=%s)", session_id)
         else:
             logger.warning(
                 "AI planner not available — cannot process transcript")

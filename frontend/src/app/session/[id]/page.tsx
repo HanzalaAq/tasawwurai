@@ -12,13 +12,17 @@
  * - Test Controls (direct mock command triggering)
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useVisualization } from "@/hooks/useVisualization";
+import { useImageDisplay } from "@/hooks/useImageDisplay";
 import { ConnectionBadge } from "@/components/ConnectionBadge";
 import { TheoryPanel } from "@/components/session/TheoryPanel";
 import { VisualizationEngine } from "@/engine/VisualizationEngine";
 import { DemoMode } from "@/components/session/DemoMode";
+import { VoiceInput } from "@/components/session/VoiceInput";
+import { LiveTranscription } from "@/components/session/LiveTranscription";
+import { ImageDisplay } from "@/components/session/ImageDisplay";
 import { TranscriptPanel, type TranscriptEntry } from "@/components/session/TranscriptPanel";
 import type { ClientMessage } from "@/types";
 import type { VisualizationCommand } from "@/engine/types";
@@ -31,23 +35,44 @@ export default function SessionPage() {
   const sessionId = "demo";
   const { status, lastMessage, send } = useWebSocket(sessionId);
   const command = useVisualization(lastMessage);
+  const imageCommand = useImageDisplay(lastMessage);
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
+  // Local rolling transcript from voice input (for the sidebar feed)
+  const [voiceEntries, setVoiceEntries] = useState<{ id: number; text: string }[]>([]);
+  const voiceIdRef = useRef(0);
 
   const isConnected = status === "connected";
 
-  // Track transcript entries from server messages
+  // Called when VoiceInput produces a final transcript
+  const handleFinalTranscript = useCallback((text: string) => {
+    voiceIdRef.current += 1;
+    setVoiceEntries((prev) => {
+      const next = [...prev, { id: voiceIdRef.current, text }];
+      return next.length > 8 ? next.slice(-8) : next;
+    });
+  }, []);
+
+  // Track transcript entries from server messages.
+  // When a non-final (interim) entry arrives, replace the last interim.
+  // When a final entry arrives, replace the last interim or append.
   useEffect(() => {
     if (lastMessage && (lastMessage as any).type === "transcript_segment") {
       const msg = lastMessage as any;
-      setTranscript((prev) => [
-        ...prev,
-        {
-          id: msg.segment_id,
-          text: msg.text,
-          is_final: msg.is_final,
-          timestamp: msg.timestamp,
-        },
-      ]);
+      const entry: TranscriptEntry = {
+        id: msg.segment_id,
+        text: msg.text,
+        is_final: msg.is_final,
+        timestamp: msg.timestamp,
+      };
+
+      setTranscript((prev) => {
+        // If the last entry is non-final (interim), replace it
+        if (prev.length > 0 && !prev[prev.length - 1].is_final) {
+          return [...prev.slice(0, -1), entry];
+        }
+        // Otherwise append
+        return [...prev, entry];
+      });
     }
   }, [lastMessage]);
 
@@ -93,36 +118,65 @@ export default function SessionPage() {
       {/* Main content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Visualization canvas */}
-        <main className="flex-1 p-4">
-          {command ? (
+        <main className="relative flex-1 p-4">
+          {command && imageCommand ? (
+            /* Split view: simulation + image */
+            <div className="flex h-full gap-3">
+              <div className="flex-1 rounded-xl border border-gray-700/50 bg-gray-900/60 overflow-hidden">
+                <VisualizationEngine
+                  command={command as VisualizationCommand}
+                  onParameterChange={handleParameterChange}
+                />
+              </div>
+              <div className="flex-1 rounded-xl border border-gray-700/50 bg-gray-900/60 overflow-hidden">
+                <ImageDisplay command={imageCommand} />
+              </div>
+            </div>
+          ) : command ? (
+            /* Simulation only */
             <div className="h-full rounded-xl border border-gray-700/50 bg-gray-900/60 overflow-hidden">
               <VisualizationEngine
                 command={command as VisualizationCommand}
                 onParameterChange={handleParameterChange}
               />
             </div>
+          ) : imageCommand ? (
+            /* Image only */
+            <div className="h-full rounded-xl border border-gray-700/50 bg-gray-900/60 overflow-hidden">
+              <ImageDisplay command={imageCommand} />
+            </div>
           ) : (
+            /* Empty state */
             <div className="flex h-full items-center justify-center rounded-xl border border-gray-800 bg-gray-900/40">
               <div className="text-center space-y-3">
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gray-800/50">
                   <svg className="h-10 w-10 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z" />
                   </svg>
                 </div>
-                <p className="text-lg font-medium text-gray-400">No Visualization Active</p>
+                <p className="text-lg font-medium text-gray-400">Ready to Learn</p>
                 <p className="text-sm text-gray-600 max-w-sm">
-                  Use the <strong className="text-purple-400">Demo Mode</strong> to simulate a teacher
-                  explaining a concept, or use <strong className="text-blue-400">Test Controls</strong> to
-                  send a visualization command directly.
+                  Press the <strong className="text-blue-400">mic button</strong> below and start speaking.
+                  AI will generate visualizations in real time.
                 </p>
               </div>
             </div>
           )}
+
+          {/* Floating voice input bar — always at the bottom of the main area */}
+          <VoiceInput
+            onSend={handleSend}
+            disabled={!isConnected}
+            onFinalTranscript={handleFinalTranscript}
+          />
         </main>
 
         {/* Right: Sidebar */}
         <aside className="flex w-80 flex-col gap-3 overflow-y-auto border-l border-gray-800 p-4">
-          {/* Demo mode */}
+          {/* Live transcript feed */}
+          <LiveTranscription entries={voiceEntries} />
+
+          {/* Demo mode (fallback) */}
           <DemoMode onSend={handleSend} disabled={!isConnected} />
 
           {/* Test controls */}

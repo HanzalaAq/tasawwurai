@@ -71,6 +71,7 @@ export default function ProjectileRenderer({
   const containerRef = useRef<HTMLDivElement>(null);
   const animRef = useRef(0);
   const dimsRef = useRef({ w: 800, h: 500, dpr: 1 });
+  const timeRef = useRef(0);
 
   // Extract parameters with safe defaults
   const velocity = parameters.velocity ?? 20;
@@ -107,6 +108,11 @@ export default function ProjectileRenderer({
     playing: false,
     completed: false,
   });
+
+  // Keep timeRef in sync with sim.time for use inside animation closure
+  useEffect(() => {
+    timeRef.current = sim.time;
+  }, [sim.time]);
 
   // ── Physics Functions ────────────────────────────────────────────
 
@@ -636,15 +642,17 @@ export default function ProjectileRenderer({
       const delta = ((now - lastFrame) / 1000) * speed;
       lastFrame = now;
 
-      setSim((prev) => {
-        const next = prev.time + delta;
-        if (next >= flightTime) {
-          return { time: flightTime, playing: false, completed: true };
-        }
-        return { ...prev, time: next };
-      });
+      const nextTime = timeRef.current + delta;
+      if (nextTime >= flightTime) {
+        timeRef.current = flightTime;
+        setSim({ time: flightTime, playing: false, completed: true });
+        render(flightTime);
+        return;
+      }
 
-      render(Math.min(sim.time + delta, flightTime));
+      timeRef.current = nextTime;
+      setSim((prev) => ({ ...prev, time: nextTime }));
+      render(nextTime);
       animRef.current = requestAnimationFrame(animate);
     };
 
@@ -659,31 +667,43 @@ export default function ProjectileRenderer({
 
   // Reset simulation when physics params change
   useEffect(() => {
+    timeRef.current = 0;
     setSim({ time: 0, playing: false, completed: false });
   }, [velocity, angle, gravity]);
 
   // ── Controls ───────────────────────────────────────────────────
 
   const play = () => {
-    if (sim.completed) setSim({ time: 0, playing: true, completed: false });
-    else setSim((s) => ({ ...s, playing: true }));
+    if (sim.completed) {
+      timeRef.current = 0;
+      setSim({ time: 0, playing: true, completed: false });
+    } else setSim((s) => ({ ...s, playing: true }));
   };
   const pause = () => setSim((s) => ({ ...s, playing: false }));
-  const reset = () => setSim({ time: 0, playing: false, completed: false });
-  const stepFwd = () =>
+  const reset = () => {
+    timeRef.current = 0;
+    setSim({ time: 0, playing: false, completed: false });
+  };
+  const stepFwd = () => {
+    const newTime = Math.min(sim.time + flightTime / 30, flightTime);
+    timeRef.current = newTime;
     setSim((s) => ({
       ...s,
       playing: false,
-      time: Math.min(s.time + flightTime / 30, flightTime),
-      completed: s.time + flightTime / 30 >= flightTime,
+      time: newTime,
+      completed: newTime >= flightTime,
     }));
-  const stepBack = () =>
+  };
+  const stepBack = () => {
+    const newTime = Math.max(sim.time - flightTime / 30, 0);
+    timeRef.current = newTime;
     setSim((s) => ({
       ...s,
       playing: false,
-      time: Math.max(s.time - flightTime / 30, 0),
+      time: newTime,
       completed: false,
     }));
+  };
 
   const setPreset = (g: number) => onUpdate?.({ gravity: g });
 

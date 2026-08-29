@@ -13,7 +13,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { WebSocketClient } from "@/lib/websocket";
 import type { ClientMessage, ConnectionStatus, ServerMessage } from "@/types";
 
-const BACKEND_WS_BASE = "ws://localhost:8000";
+const BACKEND_WS_BASE = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
 
 export function useWebSocket(sessionId: string) {
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");

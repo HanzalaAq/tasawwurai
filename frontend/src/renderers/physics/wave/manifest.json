@@ -1,0 +1,18 @@
+{
+  "type": "physics.wave",
+  "subject": "physics",
+  "name": "Wave Simulation",
+  "description": "Animated transverse wave with adjustable frequency, amplitude, and wavelength.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "frequency": { "type": "number", "default": 2.0, "min": 0.1, "max": 10, "unit": "Hz" },
+      "amplitude": { "type": "number", "default": 1.0, "min": 0.1, "max": 5, "unit": "m" },
+      "wavelength": { "type": "number", "default": 3.0, "min": 0.5, "max": 20, "unit": "m" },
+      "showNodes": { "type": "boolean", "default": false }
+    },
+    "required": ["frequency", "amplitude"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

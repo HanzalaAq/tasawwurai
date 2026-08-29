@@ -65,6 +65,22 @@ class VisualizationCommand(BaseModel):
     concept: str = Field(..., min_length=1, max_length=100)
     visualization: VisualizationPayload
     theory: TheoryBlock
+    render_mode: Literal["simulation", "image", "both"] = Field(
+        default="simulation",
+        description=(
+            "'simulation' = use a registered interactive visualization, "
+            "'image' = generate an AI image using the image_prompt, "
+            "'both' = show simulation and image simultaneously"
+        ),
+    )
+    image_prompt: str = Field(
+        default="",
+        description=(
+            "Detailed prompt for AI image generation. "
+            "Required when render_mode is 'image' or 'both'. "
+            "Describe the educational illustration clearly and specifically."
+        ),
+    )
 
     @field_validator("action")
     @classmethod

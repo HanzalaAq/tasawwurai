@@ -32,6 +32,18 @@ export class WebSocketClient {
   connect(): void {
     if (this.ws?.readyState === WebSocket.OPEN) return;
 
+    // Tear down any previous socket before creating a new one.
+    // This prevents stale onclose handlers from clobbering the new connection's status.
+    if (this.ws) {
+      const old = this.ws;
+      old.onopen = null;
+      old.onclose = null;
+      old.onerror = null;
+      old.onmessage = null;
+      try { old.close(); } catch { /* ignore */ }
+      this.ws = null;
+    }
+
     this.shouldReconnect = true;
     this.onStatusChange("connecting");
 
@@ -43,12 +55,16 @@ export class WebSocketClient {
       return;
     }
 
-    this.ws.onopen = () => {
+    const ws = this.ws;
+
+    ws.onopen = () => {
+      if (this.ws !== ws) return; // stale socket
       this.reconnectAttempt = 0;
       this.onStatusChange("connected");
     };
 
-    this.ws.onmessage = (event) => {
+    ws.onmessage = (event) => {
+      if (this.ws !== ws) return; // stale socket
       try {
         const data = JSON.parse(event.data);
         this.onMessage(data);
@@ -57,14 +73,16 @@ export class WebSocketClient {
       }
     };
 
-    this.ws.onclose = () => {
+    ws.onclose = () => {
+      if (this.ws !== ws) return; // stale socket
       this.onStatusChange("disconnected");
       if (this.shouldReconnect) {
         this.scheduleReconnect();
       }
     };
 
-    this.ws.onerror = () => {
+    ws.onerror = () => {
+      if (this.ws !== ws) return; // stale socket
       this.onStatusChange("error");
     };
   }
@@ -85,8 +103,15 @@ export class WebSocketClient {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
-    this.ws?.close();
-    this.ws = null;
+    if (this.ws) {
+      const old = this.ws;
+      old.onopen = null;
+      old.onclose = null;
+      old.onerror = null;
+      old.onmessage = null;
+      try { old.close(); } catch { /* ignore */ }
+      this.ws = null;
+    }
   }
 
   /** Schedule a reconnection with exponential backoff. */

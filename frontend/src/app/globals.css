@@ -15,3 +15,166 @@ body {
   color: #a7f3d0;
   font-size: 0.95em;
 }
+
+/* --- LiveTranscription animations --- */
+
+/* Waveform bars — pulsing audio visualizer */
+.waveform-bar {
+  animation: waveform 600ms ease-in-out infinite alternate;
+}
+
+@keyframes waveform {
+  0% {
+    height: 4px;
+    opacity: 0.4;
+  }
+  100% {
+    height: 28px;
+    opacity: 1;
+  }
+}
+
+/* Interim text cursor blink */
+.interim-cursor {
+  animation: cursor-blink 700ms steps(1) infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Mic button ripple ring */
+.mic-ripple {
+  animation: ripple-expand 1.5s ease-out infinite;
+}
+
+@keyframes ripple-expand {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Processing dots bounce */
+.processing-dot {
+  animation: dot-bounce 900ms ease-in-out infinite;
+}
+
+@keyframes dot-bounce {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Fade-in for new elements */
+.animate-fade-in {
+  animation: fade-in 400ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Transcript entry slide-in */
+.transcript-entry {
+  animation: slide-in 300ms ease-out both;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --- VoiceInput (centralized floating bar) --- */
+
+/* Anchors the floating bar at the bottom-center of the main area */
+.voice-input-bar {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.voice-input-bar > * {
+  pointer-events: auto;
+}
+
+/* The floating pill container */
+.voice-input-container {
+  min-width: 320px;
+  max-width: 520px;
+}
+
+/* Subtle glow when actively listening */
+.voice-input-active {
+  box-shadow:
+    0 0 0 1px rgba(239, 68, 68, 0.15),
+    0 0 40px -8px rgba(239, 68, 68, 0.25),
+    0 8px 32px -4px rgba(0, 0, 0, 0.5);
+}
+
+/* Ping burst behind mic button */
+.mic-ping {
+  animation: mic-ping-anim 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes mic-ping-anim {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  75%, 100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Interim text fade-in */
+.voice-input-interim {
+  animation: fade-in 200ms ease-out;
+}
+
+/* --- ImageDisplay animations --- */
+
+/* Progress bar that fills slowly to simulate generation */
+.image-progress-bar {
+  animation: progress-fill 12s ease-out forwards;
+  width: 0%;
+}
+
+@keyframes progress-fill {
+  0%   { width: 0%; }
+  15%  { width: 20%; }
+  40%  { width: 45%; }
+  70%  { width: 70%; }
+  90%  { width: 85%; }
+  100% { width: 95%; }
+}
