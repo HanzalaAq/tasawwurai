@@ -1,0 +1,18 @@
+{
+  "type": "physics.pendulum",
+  "subject": "physics",
+  "name": "Simple Pendulum",
+  "description": "Animated pendulum swinging under gravity. Shows angle, velocity, energy distribution, and period.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "length": { "type": "number", "default": 2.0, "min": 0.5, "max": 10, "unit": "m" },
+      "angle": { "type": "number", "default": 30, "min": 1, "max": 170, "unit": "degrees" },
+      "gravity": { "type": "number", "default": 9.81, "min": 0.1, "max": 25, "unit": "m/s²" },
+      "damping": { "type": "number", "default": 0.02, "min": 0, "max": 0.5 }
+    },
+    "required": ["length", "angle"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

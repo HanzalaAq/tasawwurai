@@ -1,0 +1,18 @@
+{
+  "type": "math.derivative",
+  "subject": "mathematics",
+  "name": "Derivative Visualizer",
+  "description": "Function plot with animated tangent line. Shows f(x), f'(x), movable tangent point, slope value, and critical points.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "expression": { "type": "string", "default": "x^3 - 3*x" },
+      "xMin": { "type": "number", "default": -4 },
+      "xMax": { "type": "number", "default": 4 },
+      "showTangent": { "type": "boolean", "default": true }
+    },
+    "required": ["expression"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

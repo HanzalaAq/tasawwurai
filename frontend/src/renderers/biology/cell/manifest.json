@@ -1,0 +1,16 @@
+{
+  "type": "biology.cell",
+  "subject": "biology",
+  "name": "Cell Structure",
+  "description": "Interactive animal cell cross-section with labeled organelles and subtle animations.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "showLabels": { "type": "boolean", "default": true },
+      "cellType": { "type": "string", "default": "animal", "description": "animal or plant" }
+    },
+    "required": []
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

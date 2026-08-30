@@ -13,6 +13,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useVisualization } from "@/hooks/useVisualization";
 import { useImageDisplay } from "@/hooks/useImageDisplay";
@@ -32,7 +33,8 @@ import Link from "next/link";
 import "@/renderers";
 
 export default function SessionPage() {
-  const sessionId = "demo";
+  const params = useParams<{ id: string }>();
+  const sessionId = params.id ?? "demo";
   const { status, lastMessage, send } = useWebSocket(sessionId);
   const command = useVisualization(lastMessage);
   const imageCommand = useImageDisplay(lastMessage);
@@ -210,7 +212,18 @@ function TestControls({ onSend, disabled }: { onSend: (m: ClientMessage) => void
   const scenarios = [
     { subject: "physics", concept: "projectile_motion", label: "Projectile" },
     { subject: "physics", concept: "wave_motion", label: "Wave" },
+    { subject: "physics", concept: "free_fall", label: "Free Fall" },
+    { subject: "physics", concept: "pendulum", label: "Pendulum" },
     { subject: "math", concept: "quadratic_function", label: "Quadratic" },
+    { subject: "math", concept: "derivative", label: "Derivative" },
+    { subject: "math", concept: "vector", label: "Vector" },
+    { subject: "computer_science", concept: "sorting_algorithm", label: "Sorting" },
+    { subject: "computer_science", concept: "binary_tree", label: "Tree" },
+    { subject: "computer_science", concept: "bfs_dfs", label: "BFS/DFS" },
+    { subject: "biology", concept: "dna_replication", label: "DNA" },
+    { subject: "biology", concept: "cell_structure", label: "Cell" },
+    { subject: "chemistry", concept: "atomic_structure", label: "Atom" },
+    { subject: "chemistry", concept: "molecule", label: "Molecule" },
   ];
 
   return (

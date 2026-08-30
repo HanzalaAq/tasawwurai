@@ -1,0 +1,17 @@
+{
+  "type": "cs.sorting_algorithm",
+  "subject": "computer_science",
+  "name": "Sorting Algorithm Visualizer",
+  "description": "Step-by-step animation of sorting algorithms. Shows comparisons, swaps, and array state in real time.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "algorithm": { "type": "string", "default": "bubble", "description": "Algorithm: bubble, selection, insertion, merge, quick" },
+      "arraySize": { "type": "number", "default": 15, "min": 5, "max": 40 },
+      "speed": { "type": "number", "default": 1.0, "min": 0.1, "max": 5.0 }
+    },
+    "required": ["algorithm"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

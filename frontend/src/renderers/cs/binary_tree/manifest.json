@@ -1,0 +1,17 @@
+{
+  "type": "cs.binary_tree",
+  "subject": "computer_science",
+  "name": "Binary Tree Visualizer",
+  "description": "Interactive binary tree with traversal animations (in-order, pre-order, post-order). Shows insert and node highlighting.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "depth": { "type": "number", "default": 3, "min": 1, "max": 5 },
+      "showTraversal": { "type": "boolean", "default": true },
+      "traversalType": { "type": "string", "default": "inorder", "description": "inorder, preorder, postorder" }
+    },
+    "required": []
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

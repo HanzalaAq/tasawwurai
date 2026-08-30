@@ -1,0 +1,21 @@
+{
+  "type": "math.vector",
+  "subject": "mathematics",
+  "name": "Vector Visualizer",
+  "description": "2D vector operations with animated addition, subtraction, scaling, and dot product visualization.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "x": { "type": "number", "default": 3, "description": "Vector A x-component" },
+      "y": { "type": "number", "default": 4, "description": "Vector A y-component" },
+      "bx": { "type": "number", "default": 1, "description": "Vector B x-component" },
+      "by": { "type": "number", "default": 2, "description": "Vector B y-component" },
+      "operation": { "type": "string", "default": "add", "description": "add, subtract, scale, dot" },
+      "showComponents": { "type": "boolean", "default": true },
+      "showMagnitude": { "type": "boolean", "default": true }
+    },
+    "required": []
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

@@ -112,6 +112,260 @@ MOCK_VISUALIZATIONS = {
             ],
         ),
     },
+    # --- Physics: Free Fall ---
+    "physics.free_fall": {
+        "visualization": VisualizationPayload(
+            type="physics.free_fall",
+            parameters={"height": 100, "gravity": 9.81, "airResistance": 0, "mass": 1},
+        ),
+        "theory": TheoryBlock(
+            title="Free Fall",
+            explanation=(
+                "Free fall is motion under the influence of gravity alone, with no air resistance. "
+                "All objects fall at the same rate regardless of mass (Galileo's principle)."
+            ),
+            formulas=[
+                FormulaItem(name="Distance", latex="d = \\frac{1}{2}gt^2"),
+                FormulaItem(name="Velocity", latex="v = gt"),
+                FormulaItem(name="Time", latex="t = \\sqrt{\\frac{2d}{g}}"),
+            ],
+            key_points=[
+                "Acceleration is constant at g = 9.81 m/s² on Earth",
+                "Mass does not affect fall speed in vacuum",
+                "Galileo's famous Leaning Tower of Pisa experiment",
+            ],
+        ),
+    },
+    # --- Physics: Pendulum ---
+    "physics.pendulum": {
+        "visualization": VisualizationPayload(
+            type="physics.pendulum",
+            parameters={"length": 2.0, "angle": 30, "gravity": 9.81, "damping": 0.02},
+        ),
+        "theory": TheoryBlock(
+            title="Simple Pendulum",
+            explanation=(
+                "A simple pendulum swings back and forth under gravity. "
+                "For small angles, the motion is approximately simple harmonic."
+            ),
+            formulas=[
+                FormulaItem(name="Period", latex="T = 2\\pi\\sqrt{L/g}"),
+                FormulaItem(name="Frequency", latex="f = 1/T"),
+                FormulaItem(name="Restoring Force", latex="F = -mg\\sin\\theta"),
+            ],
+            key_points=[
+                "Period depends on length, not mass",
+                "Small angle approximation: sin(θ) ≈ θ",
+                "Energy oscillates between KE and PE",
+            ],
+        ),
+    },
+    # --- Math: Derivative ---
+    "math.derivative": {
+        "visualization": VisualizationPayload(
+            type="math.derivative",
+            parameters={"expression": "x^3 - 3*x", "xMin": -4, "xMax": 4, "showTangent": True},
+        ),
+        "theory": TheoryBlock(
+            title="Derivatives",
+            explanation=(
+                "The derivative measures the instantaneous rate of change of a function. "
+                "Geometrically, it is the slope of the tangent line at any point on the curve."
+            ),
+            formulas=[
+                FormulaItem(name="Definition", latex="f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}"),
+                FormulaItem(name="Power Rule", latex="\\frac{d}{dx} x^n = nx^{n-1}"),
+                FormulaItem(name="Chain Rule", latex="\\frac{d}{dx} f(g(x)) = f'(g(x)) \\cdot g'(x)"),
+            ],
+            key_points=[
+                "Positive derivative = function is increasing",
+                "Zero derivative = possible maximum or minimum (critical point)",
+                "Negative derivative = function is decreasing",
+            ],
+        ),
+    },
+    # --- Math: Vector ---
+    "math.vector": {
+        "visualization": VisualizationPayload(
+            type="math.vector",
+            parameters={"x": 3, "y": 4, "bx": 1, "by": 2, "operation": "add", "showComponents": True, "showMagnitude": True},
+        ),
+        "theory": TheoryBlock(
+            title="Vectors",
+            explanation=(
+                "A vector has both magnitude and direction. "
+                "Vectors are fundamental in physics and engineering for describing forces, velocities, and displacements."
+            ),
+            formulas=[
+                FormulaItem(name="Magnitude", latex="|\\vec{v}| = \\sqrt{x^2 + y^2}"),
+                FormulaItem(name="Direction", latex="\\theta = \\arctan(y/x)"),
+                FormulaItem(name="Dot Product", latex="\\vec{A} \\cdot \\vec{B} = |A||B|\\cos\\theta"),
+            ],
+            key_points=[
+                "Vectors can be added component-wise",
+                "Dot product measures alignment between vectors",
+                "Cross product gives a perpendicular vector",
+            ],
+        ),
+    },
+    # --- CS: Sorting Algorithm ---
+    "computer_science.sorting_algorithm": {
+        "visualization": VisualizationPayload(
+            type="cs.sorting_algorithm",
+            parameters={"algorithm": "bubble", "arraySize": 15, "speed": 1.0},
+        ),
+        "theory": TheoryBlock(
+            title="Sorting Algorithms",
+            explanation=(
+                "Sorting arranges data in a specific order. "
+                "Different algorithms trade off between speed, memory usage, and simplicity."
+            ),
+            formulas=[
+                FormulaItem(name="Bubble Sort", latex="O(n^2)"),
+                FormulaItem(name="Merge Sort", latex="O(n \\log n)"),
+                FormulaItem(name="Quick Sort (avg)", latex="O(n \\log n)"),
+            ],
+            key_points=[
+                "Bubble sort compares adjacent elements repeatedly",
+                "Merge sort uses divide and conquer strategy",
+                "Quick sort is fast in practice due to cache efficiency",
+            ],
+        ),
+    },
+    # --- CS: Binary Tree ---
+    "computer_science.binary_tree": {
+        "visualization": VisualizationPayload(
+            type="cs.binary_tree",
+            parameters={"depth": 3, "showTraversal": True, "traversalType": "inorder"},
+        ),
+        "theory": TheoryBlock(
+            title="Binary Trees",
+            explanation=(
+                "A binary tree is a hierarchical data structure where each node has at most two children. "
+                "They enable efficient searching, sorting, and expression parsing."
+            ),
+            formulas=[
+                FormulaItem(name="Max Nodes", latex="N = 2^{d+1} - 1"),
+                FormulaItem(name="Height", latex="h = \\lfloor \\log_2 n \\rfloor"),
+            ],
+            key_points=[
+                "In-order traversal gives sorted output for BST",
+                "Time complexity: O(log n) for balanced trees",
+                "Pre-order used for copying trees",
+            ],
+        ),
+    },
+    # --- CS: BFS/DFS ---
+    "computer_science.bfs_dfs": {
+        "visualization": VisualizationPayload(
+            type="cs.bfs_dfs",
+            parameters={"algorithm": "bfs", "startNode": "A", "speed": 1.0},
+        ),
+        "theory": TheoryBlock(
+            title="BFS & DFS Traversal",
+            explanation=(
+                "Breadth-First Search explores level by level using a queue. "
+                "Depth-First Search goes as deep as possible before backtracking using a stack."
+            ),
+            formulas=[
+                FormulaItem(name="BFS Time", latex="O(V + E)"),
+                FormulaItem(name="DFS Time", latex="O(V + E)"),
+            ],
+            key_points=[
+                "BFS uses a queue (FIFO) data structure",
+                "DFS uses a stack (LIFO) or recursion",
+                "BFS finds the shortest path in unweighted graphs",
+            ],
+        ),
+    },
+    # --- Biology: DNA Replication ---
+    "biology.dna_replication": {
+        "visualization": VisualizationPayload(
+            type="biology.dna_replication",
+            parameters={"basePairs": 12, "animating": True, "showLabels": True},
+        ),
+        "theory": TheoryBlock(
+            title="DNA Structure & Replication",
+            explanation=(
+                "DNA is a double helix that carries genetic information. "
+                "It replicates by unwinding and using each strand as a template for a new complementary strand."
+            ),
+            formulas=[
+                FormulaItem(name="Base Pairs", latex="A \\leftrightarrow T, \\quad G \\leftrightarrow C"),
+            ],
+            key_points=[
+                "Adenine (A) pairs with Thymine (T) via 2 hydrogen bonds",
+                "Guanine (G) pairs with Cytosine (C) via 3 hydrogen bonds",
+                "DNA replicates semi-conservatively",
+            ],
+        ),
+    },
+    # --- Biology: Cell Structure ---
+    "biology.cell_structure": {
+        "visualization": VisualizationPayload(
+            type="biology.cell",
+            parameters={"showLabels": True, "cellType": "animal"},
+        ),
+        "theory": TheoryBlock(
+            title="Cell Structure",
+            explanation=(
+                "Cells are the basic building blocks of all living organisms. "
+                "Animal cells contain specialized organelles that carry out specific functions."
+            ),
+            formulas=[],
+            key_points=[
+                "Nucleus contains DNA and controls cell activities",
+                "Mitochondria produce ATP (energy) via cellular respiration",
+                "Cell membrane controls what enters and exits",
+            ],
+        ),
+    },
+    # --- Chemistry: Atomic Structure ---
+    "chemistry.atomic_structure": {
+        "visualization": VisualizationPayload(
+            type="chemistry.atomic_structure",
+            parameters={"element": "carbon", "showLabels": True},
+        ),
+        "theory": TheoryBlock(
+            title="Atomic Structure",
+            explanation=(
+                "Atoms consist of a dense nucleus (protons + neutrons) surrounded by "
+                "electrons in orbital shells. The Bohr model shows electrons in fixed circular orbits."
+            ),
+            formulas=[
+                FormulaItem(name="Atomic Number", latex="Z = \\text{number of protons}"),
+                FormulaItem(name="Mass Number", latex="A = Z + N"),
+            ],
+            key_points=[
+                "Protons define the element (atomic number)",
+                "Electrons determine chemical behavior",
+                "Neutrons add mass but no charge",
+            ],
+        ),
+    },
+    # --- Chemistry: Molecule ---
+    "chemistry.molecule": {
+        "visualization": VisualizationPayload(
+            type="chemistry.molecule",
+            parameters={"molecule": "water", "showAngles": True, "showLabels": True},
+        ),
+        "theory": TheoryBlock(
+            title="Molecular Structure",
+            explanation=(
+                "Molecules are formed when atoms bond together by sharing or transferring electrons. "
+                "The shape of a molecule determines its chemical properties and reactivity."
+            ),
+            formulas=[
+                FormulaItem(name="VSEPR Bond Angle", latex="\\text{H}_2\\text{O: } 104.5°"),
+                FormulaItem(name="Electronegativity", latex="\\Delta EN > 1.7 \\Rightarrow \\text{ionic}"),
+            ],
+            key_points=[
+                "Covalent bonds share electrons between atoms",
+                "Ionic bonds transfer electrons (e.g. NaCl)",
+                "Molecular shape determined by VSEPR theory",
+            ],
+        ),
+    },
 }
 
 

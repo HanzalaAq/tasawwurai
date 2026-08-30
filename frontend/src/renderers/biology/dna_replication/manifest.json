@@ -1,0 +1,17 @@
+{
+  "type": "biology.dna_replication",
+  "subject": "biology",
+  "name": "DNA Replication",
+  "description": "Animated DNA double helix with replication fork. Shows base pairs, hydrogen bonds, and strand synthesis.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "basePairs": { "type": "number", "default": 12, "min": 6, "max": 20 },
+      "animating": { "type": "boolean", "default": true },
+      "showLabels": { "type": "boolean", "default": true }
+    },
+    "required": []
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

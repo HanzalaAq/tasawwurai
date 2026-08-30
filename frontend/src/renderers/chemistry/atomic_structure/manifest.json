@@ -1,0 +1,16 @@
+{
+  "type": "chemistry.atomic_structure",
+  "subject": "chemistry",
+  "name": "Atomic Structure",
+  "description": "Bohr model with animated electron orbits, shell transitions, and element presets.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "element": { "type": "string", "default": "carbon", "description": "Element preset: hydrogen, helium, carbon, oxygen, neon, sodium, iron" },
+      "showLabels": { "type": "boolean", "default": true }
+    },
+    "required": []
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}
