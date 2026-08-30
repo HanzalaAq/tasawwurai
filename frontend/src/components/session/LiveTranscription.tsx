@@ -26,11 +26,12 @@ interface TranscriptEntry {
 
 interface Props {
   entries: TranscriptEntry[];
+  onDismiss?: () => void;
 }
 
 const MAX_DISPLAY = 6;
 
-export function LiveTranscription({ entries }: Props) {
+export function LiveTranscription({ entries, onDismiss }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const visible = entries.slice(-MAX_DISPLAY);
 
@@ -50,11 +51,24 @@ export function LiveTranscription({ entries }: Props) {
 
   return (
     <div className="rounded-xl border border-gray-700/50 bg-gray-800/40 overflow-hidden">
-      <div className="flex items-center gap-2 px-4 pt-4 pb-2">
-        <h3 className="text-sm font-semibold text-gray-300">Transcript</h3>
-        <span className="rounded-full bg-gray-700/50 px-2 py-0.5 text-[11px] text-gray-500">
-          {entries.length}
-        </span>
+      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-gray-300">Transcript</h3>
+          <span className="rounded-full bg-gray-700/50 px-2 py-0.5 text-[11px] text-gray-500">
+            {entries.length}
+          </span>
+        </div>
+        {onDismiss && (
+          <button
+            onClick={onDismiss}
+            className="rounded-md p-1 text-gray-500 transition-colors hover:bg-gray-700/40 hover:text-gray-300"
+            title="Close transcript"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <div ref={scrollRef} className="px-4 pb-4 space-y-1.5 max-h-48 overflow-y-auto scroll-smooth">

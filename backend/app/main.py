@@ -90,13 +90,6 @@ def _setup_mock_provider(provider) -> None:
          {"name": "Max Height", "latex": "H = (v^2 \\sin^2 \\theta) / (2g)"}],
         ["Horizontal velocity stays constant", "Vertical velocity changes due to gravity",
          "Maximum range at 45 degrees"],
-        image_prompt="Scientific textbook illustration of projectile motion: a ball launched from "
-                     "ground level traces a perfect parabolic arc. Velocity vectors shown at launch "
-                     "point — horizontal Vx (blue arrow) and vertical Vy (red arrow) — with angle "
-                     "theta labeled between them. Dashed horizontal and vertical grid lines mark the "
-                     "apex (labeled 'Max Height H') and landing point (labeled 'Range R'). Clean white "
-                     "background with soft blue tones, professional educational diagram quality, "
-                     "highly detailed with labeled axes (x, y).",
     )
     for kw in ["projectile", "throw", "launch", "parabola", "trajectory", "thrown"]:
         provider.register_response(kw, projectile)

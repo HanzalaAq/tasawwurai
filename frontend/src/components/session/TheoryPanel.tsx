@@ -12,11 +12,24 @@ import { Math } from "@/components/Math";
 
 interface Props {
   theory: TheoryBlock;
+  onDismiss?: () => void;
 }
 
-export function TheoryPanel({ theory }: Props) {
+export function TheoryPanel({ theory, onDismiss }: Props) {
   return (
-    <div className="space-y-4 overflow-y-auto rounded-xl border border-gray-700/50 bg-gray-800/40 p-5">
+    <div className="relative space-y-4 overflow-y-auto rounded-xl border border-gray-700/50 bg-gray-800/40 p-5">
+      {/* Close button */}
+      {onDismiss && (
+        <button
+          onClick={onDismiss}
+          className="absolute right-3 top-3 rounded-md p-1 text-gray-500 transition-colors hover:bg-gray-700/40 hover:text-gray-300"
+          title="Close theory"
+        >
+          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      )}
       {/* Title */}
       <h2 className="text-lg font-bold text-white">{theory.title}</h2>
 

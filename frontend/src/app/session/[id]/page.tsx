@@ -43,7 +43,24 @@ export default function SessionPage() {
   const [voiceEntries, setVoiceEntries] = useState<{ id: number; text: string }[]>([]);
   const voiceIdRef = useRef(0);
 
+  // Dismiss state for panels — reset when a new visualization arrives
+  const [simDismissed, setSimDismissed] = useState(false);
+  const [imgDismissed, setImgDismissed] = useState(false);
+  const [theoryDismissed, setTheoryDismissed] = useState(false);
+  const [transcriptDismissed, setTranscriptDismissed] = useState(false);
+  const prevCommandIdRef = useRef<string>("");
+
   const isConnected = status === "connected";
+
+  // Reset dismiss states when a new visualization command arrives
+  useEffect(() => {
+    if (command && (command as VisualizationCommand).command_id !== prevCommandIdRef.current) {
+      prevCommandIdRef.current = (command as VisualizationCommand).command_id;
+      setSimDismissed(false);
+      setImgDismissed(false);
+      setTheoryDismissed(false);
+    }
+  }, [command]);
 
   // Called when VoiceInput produces a final transcript
   const handleFinalTranscript = useCallback((text: string) => {
@@ -121,31 +138,33 @@ export default function SessionPage() {
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Visualization canvas */}
         <main className="relative flex-1 p-4">
-          {command && imageCommand ? (
+          {command && imageCommand && !simDismissed && !imgDismissed ? (
             /* Split view: simulation + image */
             <div className="flex h-full gap-3">
               <div className="flex-1 rounded-xl border border-gray-700/50 bg-gray-900/60 overflow-hidden">
                 <VisualizationEngine
                   command={command as VisualizationCommand}
                   onParameterChange={handleParameterChange}
+                  onDismiss={() => setSimDismissed(true)}
                 />
               </div>
               <div className="flex-1 rounded-xl border border-gray-700/50 bg-gray-900/60 overflow-hidden">
-                <ImageDisplay command={imageCommand} />
+                <ImageDisplay command={imageCommand} onDismiss={() => setImgDismissed(true)} />
               </div>
             </div>
-          ) : command ? (
+          ) : command && !simDismissed ? (
             /* Simulation only */
             <div className="h-full rounded-xl border border-gray-700/50 bg-gray-900/60 overflow-hidden">
               <VisualizationEngine
                 command={command as VisualizationCommand}
                 onParameterChange={handleParameterChange}
+                onDismiss={() => setSimDismissed(true)}
               />
             </div>
-          ) : imageCommand ? (
+          ) : imageCommand && !imgDismissed ? (
             /* Image only */
             <div className="h-full rounded-xl border border-gray-700/50 bg-gray-900/60 overflow-hidden">
-              <ImageDisplay command={imageCommand} />
+              <ImageDisplay command={imageCommand} onDismiss={() => setImgDismissed(true)} />
             </div>
           ) : (
             /* Empty state */
@@ -176,7 +195,9 @@ export default function SessionPage() {
         {/* Right: Sidebar */}
         <aside className="flex w-80 flex-col gap-3 overflow-y-auto border-l border-gray-800 p-4">
           {/* Live transcript feed */}
-          <LiveTranscription entries={voiceEntries} />
+          {!transcriptDismissed && (
+            <LiveTranscription entries={voiceEntries} onDismiss={() => setTranscriptDismissed(true)} />
+          )}
 
           {/* Demo mode (fallback) */}
           <DemoMode onSend={handleSend} disabled={!isConnected} />
@@ -188,7 +209,12 @@ export default function SessionPage() {
           <TranscriptPanel entries={transcript} />
 
           {/* Theory panel */}
-          {command && <TheoryPanel theory={(command as VisualizationCommand).theory} />}
+          {command && !theoryDismissed && (
+            <TheoryPanel
+              theory={(command as VisualizationCommand).theory}
+              onDismiss={() => setTheoryDismissed(true)}
+            />
+          )}
 
           {/* Debug panel */}
           {lastMessage && (

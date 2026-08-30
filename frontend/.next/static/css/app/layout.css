@@ -284,11 +284,17 @@
   .inset-\[-8px\] {
     inset: -8px;
   }
+  .top-3 {
+    top: calc(var(--spacing) * 3);
+  }
   .top-4 {
     top: calc(var(--spacing) * 4);
   }
   .right-0 {
     right: 0px;
+  }
+  .right-3 {
+    right: calc(var(--spacing) * 3);
   }
   .right-4 {
     right: calc(var(--spacing) * 4);
@@ -672,6 +678,9 @@
   }
   .justify-end {
     justify-content: flex-end;
+  }
+  .gap-0\.5 {
+    gap: calc(var(--spacing) * 0.5);
   }
   .gap-1 {
     gap: var(--spacing);
@@ -1200,6 +1209,9 @@
   }
   .object-contain {
     object-fit: contain;
+  }
+  .p-1 {
+    padding: var(--spacing);
   }
   .p-1\.5 {
     padding: calc(var(--spacing) * 1.5);
