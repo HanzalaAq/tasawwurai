@@ -3,12 +3,18 @@ OpenAI LLM provider implementation.
 
 Uses OpenAI's structured output (response_format with json_schema).
 This is the default provider but can be swapped via the LLMProvider interface.
+
+MockProvider: demo/offline provider with keyword matching PLUS speech
+parameter extraction, so spoken values ("at 30 degrees", "plot x squared
+plus 2x") are reflected in the generated visualization.
 """
 
 from __future__ import annotations
 
+import copy
 import json
 import logging
+import re
 from typing import Any
 
 from pydantic import BaseModel
@@ -90,6 +96,311 @@ class OpenAIProvider(LLMProvider):
             raise LLMProviderError(f"OpenAI API call failed: {e}")
 
 
+# --- Speech parameter extraction helpers (used by MockProvider) ----------
+
+# Gravity presets (m/s²) recognized in speech
+GRAVITY_PRESETS = {
+    "moon": 1.62,
+    "mars": 3.71,
+    "jupiter": 24.79,
+    "earth": 9.81,
+}
+
+# Element names → AtomicStructureRenderer keys
+ELEMENTS = {
+    "hydrogen", "helium", "lithium", "beryllium", "boron", "carbon",
+    "nitrogen", "oxygen", "fluorine", "neon", "sodium", "magnesium",
+    "aluminum", "aluminium", "silicon", "phosphorus", "sulfur", "sulphur",
+    "chlorine", "argon", "potassium", "calcium", "iron", "copper",
+    "zinc", "silver", "gold",
+}
+
+# Molecule phrases → MoleculeRenderer keys
+MOLECULE_PHRASES = {
+    "water": "water", "h2o": "water", "h₂o": "water",
+    "carbon dioxide": "co2", "co2": "co2",
+    "methane": "methane", "ch4": "methane",
+    "ammonia": "ammonia", "nh3": "ammonia",
+    "sodium chloride": "nacl", "table salt": "nacl", "nacl": "nacl", "salt": "nacl",
+}
+
+# Functions supported by the frontend expression parser
+EXPR_FUNCS = {"sin", "cos", "tan", "asin", "acos", "atan",
+              "abs", "sqrt", "ln", "log", "exp", "ceil", "floor"}
+
+# Spoken math words → symbolic fragments
+SPOKEN_MATH = [
+    (r'\bsquared\b', '^2'),
+    (r'\bcubed\b', '^3'),
+    (r'\b(\d+)\s+to\s+the\s+power\s+of\s+x\b', r'\1^x'),
+    (r'\bto\s+the\s+power\s+of\s+(\d+)\b', r'^\1'),
+    (r'\bto\s+the\s+(fourth|fifth|sixth)\b', lambda m: f"^{4 + ['fourth', 'fifth', 'sixth'].index(m.group(1))}"),
+    (r'\be\s+to\s+the\s+x\b', 'exp(x)'),
+    (r'\b(?:sine|sin)\s+(?:of\s+)?x\b', 'sin(x)'),
+    (r'\b(?:cosine|cos)\s+(?:of\s+)?x\b', 'cos(x)'),
+    (r'\b(?:tangent|tan)\s+(?:of\s+)?x\b', 'tan(x)'),
+    (r'\bsquare\s+root\s+(?:of\s+)?x\b', 'sqrt(x)'),
+    (r'\bnatural\s+log(?:arithm)?\s+(?:of\s+)?x\b', 'ln(x)'),
+    (r'\blog(?:arithm)?\s+(?:of\s+)?x\b', 'log(x)'),
+    (r'\babsolute\s+value\s+(?:of\s+)?x\b', 'abs(x)'),
+    (r'\bone\s+half\s+x\b', '0.5x'),
+    (r'\bhalf\s+of\s+x\b', '0.5x'),
+    (r'\bx\s+over\s+(\d+)\b', r'x/\1'),
+    (r'\bequals\b', '='),
+    (r'\bplus\b', '+'),
+    (r'\bminus\b', '-'),
+    (r'\btimes\b', '*'),
+    (r'\bmultiplied\s+by\b', '*'),
+    (r'\bdivided\s+by\b', '/'),
+    (r'\bnegative\b', '-'),
+]
+
+# Named function shortcuts when no explicit expression is spoken
+EXPR_SHORTCUTS = [
+    (r'\bexponential\b', 'exp(x)'),
+    (r'\blogarithm\b|\blog\s+function\b', 'log(x)'),
+    (r'\bnatural\s+log\b', 'ln(x)'),
+    (r'\b(?:sine|sin)\s+wave\b|\btrigonometr', 'sin(x)'),
+    (r'\b(?:cosine|cos)\s+wave\b', 'cos(x)'),
+    (r'\bparabola\b|\bquadratic\b', 'x^2'),
+    (r'\bcubic\b', 'x^3'),
+    (r'\blinear\b', 'x'),
+]
+
+
+def _first_num(pattern: str, text: str) -> float | None:
+    """Return the first float captured by a regex, or None."""
+    m = re.search(pattern, text, re.IGNORECASE)
+    if m:
+        try:
+            return float(m.group(1))
+        except (ValueError, IndexError):
+            return None
+    return None
+
+
+def _is_valid_expression(expr: str) -> bool:
+    """Whitelist check: x must be a token (not inside a word like 'explain')."""
+    if not expr or not re.search(r'(?<![a-z])x\b', expr):
+        return False
+    stripped = re.sub(
+        r'\b(?:' + "|".join(EXPR_FUNCS) + r')\b', "", expr
+    )
+    return bool(re.fullmatch(r'[0-9xX+\-*/^().\s]+', stripped))
+
+
+def extract_speech_parameters(transcript: str, viz_type: str) -> dict[str, Any]:
+    """
+    Extract visualization parameters from natural speech.
+
+    Recognizes forms like "at 30 degrees", "20 meters per second",
+    "from 50 meters", "frequency of 5 hertz", "on the moon", "plant cell",
+    "oxygen atom", "water molecule", "quick sort", "pre order traversal".
+    Returns only parameters it could confidently extract.
+    """
+    text = transcript.lower()
+    params: dict[str, Any] = {}
+
+    # --- Gravity presets (any physics viz) ---
+    gravity = None
+    for name, value in GRAVITY_PRESETS.items():
+        if re.search(rf'\b{name}\b', text):
+            gravity = value
+            break
+
+    # --- Angle ---
+    angle = (
+        _first_num(r'(?:angle\s+(?:of|is|=)?|launch(?:ing)?\s+(?:at)?|\bat)\s*'
+                   r'(\d+(?:\.\d+)?)\s*(?:degrees?|°|deg\b)', text)
+        or _first_num(r'(\d+(?:\.\d+)?)\s*(?:degrees?|°)\s*(?:angle|launch)', text)
+    )
+
+    # --- Velocity ---
+    velocity = (
+        _first_num(r'(\d+(?:\.\d+)?)\s*(?:m/s|mps|meters?\s+per\s+second|metres?\s+per\s+second)', text)
+        or _first_num(r'(?:speed|velocity)(?:\s+of|\s+is|\s*=)?\s*(\d+(?:\.\d+)?)', text)
+    )
+
+    # --- Height ---
+    height = (
+        _first_num(r'(?:height\s+(?:of|is)?|\bfrom|\bat)\s*(\d+(?:\.\d+)?)\s*(?:meters?|metres?|m\b)', text)
+        or _first_num(r'(\d+(?:\.\d+)?)\s*(?:meters?|metres?|m)\s+(?:high|tall|drop|building)', text)
+    )
+
+    # --- Length ---
+    length = (
+        _first_num(r'(\d+(?:\.\d+)?)\s*(?:meters?|metres?)\s+(?:pendulum|long|rope|string)', text)
+        or _first_num(r'length\s+(?:of|is)?\s*(\d+(?:\.\d+)?)', text)
+    )
+
+    # --- Wave properties ---
+    frequency = (
+        _first_num(r'(\d+(?:\.\d+)?)\s*(?:hz|hertz)', text)
+        or _first_num(r'frequenc(?:y|ies)\s+(?:of|is)?\s*(\d+(?:\.\d+)?)', text)
+    )
+    amplitude = _first_num(r'amplitude\s+(?:of|is)?\s*(\d+(?:\.\d+)?)', text)
+    wavelength = _first_num(r'wavelength\s+(?:of|is)?\s*(\d+(?:\.\d+)?)', text)
+
+    # --- Mass ---
+    mass = (
+        _first_num(r'mass\s+(?:of|is)?\s*(\d+(?:\.\d+)?)', text)
+        or _first_num(r'(\d+(?:\.\d+)?)\s*(?:kg|kilograms?)', text)
+    )
+
+    # --- Derivative point ---
+    point = (
+        _first_num(r'at\s+x\s*(?:=|equals?|is)?\s*(\d+(?:\.\d+)?)', text)
+        or _first_num(r'point\s+(?:of|at|is)?\s*(\d+(?:\.\d+)?)', text)
+    )
+
+    # --- Algorithms ---
+    algorithm = None
+    for word, alg in [("quick", "quick"), ("merge", "merge"),
+                      ("insertion", "insertion"), ("selection", "selection"),
+                      ("bubble", "bubble")]:
+        if re.search(rf'\b{word}\b', text):
+            algorithm = alg
+            break
+    if algorithm is None:
+        if re.search(r'\bbfs\b|breadth[\s-]*first', text):
+            algorithm = "bfs"
+        elif re.search(r'\bdfs\b|depth[\s-]*first', text):
+            algorithm = "dfs"
+
+    # --- Tree traversal ---
+    traversal = None
+    for phrase, t in [("in order", "inorder"), ("inorder", "inorder"),
+                      ("pre order", "preorder"), ("preorder", "preorder"),
+                      ("post order", "postorder"), ("postorder", "postorder")]:
+        if phrase in text:
+            traversal = t
+            break
+
+    # --- Expression (function graphs / derivatives) ---
+    expression = extract_expression(transcript)
+
+    # --- Assemble per visualization type ---
+    if viz_type == "physics.projectile":
+        if velocity is not None: params["velocity"] = velocity
+        if angle is not None: params["angle"] = angle
+        if gravity is not None: params["gravity"] = gravity
+    elif viz_type == "physics.free_fall":
+        if height is not None: params["height"] = height
+        if gravity is not None: params["gravity"] = gravity
+        if mass is not None: params["mass"] = mass
+    elif viz_type == "physics.pendulum":
+        if length is not None: params["length"] = length
+        if angle is not None: params["angle"] = angle
+        if gravity is not None: params["gravity"] = gravity
+    elif viz_type == "physics.wave":
+        if frequency is not None: params["frequency"] = frequency
+        if amplitude is not None: params["amplitude"] = amplitude
+        if wavelength is not None: params["wavelength"] = wavelength
+    elif viz_type in ("math.function_graph", "math.derivative"):
+        if expression: params["expression"] = expression
+        if viz_type == "math.derivative" and point is not None:
+            params["point"] = point
+    elif viz_type == "cs.sorting_algorithm":
+        if algorithm in ("bubble", "selection", "insertion", "merge", "quick"):
+            params["algorithm"] = algorithm
+    elif viz_type == "cs.bfs_dfs":
+        if algorithm in ("bfs", "dfs"):
+            params["algorithm"] = algorithm
+    elif viz_type == "cs.binary_tree":
+        if traversal: params["traversalType"] = traversal
+    elif viz_type == "biology.cell":
+        if "plant" in text: params["cellType"] = "plant"
+        elif "animal" in text: params["cellType"] = "animal"
+    elif viz_type == "chemistry.atomic_structure":
+        for name in ELEMENTS:
+            if re.search(rf'\b{name}\b', text):
+                params["element"] = "aluminum" if name == "aluminium" else name
+                break
+    elif viz_type == "chemistry.molecule":
+        for phrase, key in MOLECULE_PHRASES.items():
+            if phrase in text:
+                params["molecule"] = key
+                break
+
+    return params
+
+
+def extract_expression(transcript: str) -> str | None:
+    """
+    Extract a math expression from speech.
+
+    "plot x squared plus 2x" → "x^2+2x"
+    "graph 3 times sine of x" → "3*sin(x)"
+    "differentiate x cubed minus 2x" → "x^3-2x"
+    "draw y equals 2x plus 1" → "2x+1"
+    "show the square root of x" → "sqrt(x)"
+    "exponential growth" → "exp(x)"
+    "natural log of x" → "ln(x)"
+    "explain quantum physics" → None
+    """
+    text = transcript.lower()
+
+    # Apply spoken math word substitutions to the whole text first
+    spoken = text
+    for pattern, repl in SPOKEN_MATH:
+        spoken = re.sub(pattern, repl, spoken)
+
+    func_alt = '|'.join(EXPR_FUNCS)
+
+    # 1) Expression after a plotting verb: consume math tokens left to right,
+    #    stopping at the first non-math word ("... 2x at x = 2" stops at "at")
+    verb_m = re.search(
+        r'(?:plot|graph|draw|sketch|differentiate|derivative\s+of|curve\s+of|show)\s+'
+        r'(?:me\s+|us\s+|the\s+|a\s+|an\s+)?(y\s*=\s*)?',
+        spoken,
+    )
+    if verb_m:
+        rest = spoken[verb_m.end():]
+        token_re = re.compile(
+            rf'(\d+\.\d+|\d+|(?:{func_alt})\s*\(|\)|x\b|[+\-*/^])'
+        )
+        pos, parts = 0, []
+        while pos < len(rest):
+            if rest[pos].isspace():
+                pos += 1
+                continue
+            tm = token_re.match(rest, pos)
+            if not tm:
+                break
+            parts.append(tm.group(1).replace(' ', ''))
+            pos = tm.end()
+        if parts:
+            expr = ''.join(parts)
+            if _is_valid_expression(expr):
+                return expr
+
+    # 2) Bare function call from substitution ("ln(x)", "sqrt(x)", "sin(x)")
+    m = re.search(rf'\b({func_alt})\(x\)', spoken)
+    if m:
+        return m.group(1) + '(x)'
+
+    # 3) Bare math chunk with x and operators ("x^2 + 2x", "2x+1", "2^x")
+    m = re.search(r'(\d+(?:\.\d+)?\s*\^\s*x\b)', spoken)
+    if m:
+        return re.sub(r'\s+', '', m.group(1))
+    m = re.search(
+        r'(\d*\.?\d*\s*x\b\s*(?:\^\s*\d+)?'
+        r'(?:\s*[+\-*/^]\s*\d*\.?\d*\s*(?:x\b\s*(?:\^\s*\d+)?)?)*)',
+        spoken,
+    )
+    if m:
+        expr = re.sub(r'\s+', '', m.group(1))
+        if _is_valid_expression(expr):
+            return expr
+
+    # 4) Named function shortcuts
+    for pattern, expr in EXPR_SHORTCUTS:
+        if re.search(pattern, spoken):
+            return expr
+
+    return None
+
+
 class MockProvider(LLMProvider):
     """
     Mock provider for testing and demo mode.
@@ -97,6 +408,10 @@ class MockProvider(LLMProvider):
     Returns predefined visualization commands without calling any LLM.
     Uses word-boundary matching with priority ordering (longer keywords first)
     to avoid false positives like 'atom' matching inside 'automatic'.
+
+    On a keyword match, spoken parameters ("at 30 degrees", "plot x squared")
+    are extracted and merged into the canned response so the visualization
+    matches what the user actually said.
     """
 
     def __init__(self) -> None:
@@ -117,7 +432,6 @@ class MockProvider(LLMProvider):
         Uses word-boundary-aware matching to avoid substring false positives.
         Longer keywords are checked first for specificity.
         """
-        import re
         text_lower = text.lower()
         for keyword in self._sorted_keywords:
             # Use word-boundary matching for single-word keywords
@@ -131,14 +445,36 @@ class MockProvider(LLMProvider):
                     return self._responses[keyword]
         return None
 
+    def _enrich_with_speech_parameters(
+        self, response: dict[str, Any], transcript: str
+    ) -> dict[str, Any]:
+        """Merge spoken parameters into a matched canned response (deep copy)."""
+        try:
+            result = copy.deepcopy(response)
+            command = result.get("command") or {}
+            viz = command.get("visualization") or {}
+            viz_type = viz.get("type", "")
+            if viz_type and viz_type != "placeholder":
+                spoken_params = extract_speech_parameters(transcript, viz_type)
+                if spoken_params:
+                    viz.setdefault("parameters", {}).update(spoken_params)
+                    command["visualization"] = viz
+                    result["command"] = command
+                    result["reasoning"] = (
+                        f"{result.get('reasoning', '')} | "
+                        f"speech params: {spoken_params}"
+                    )
+            return result
+        except Exception as e:  # never break the demo flow on extraction bugs
+            logger.warning("Speech parameter extraction failed: %s", e)
+            return response
+
     def _extract_topic(self, text: str) -> str:
         """
         Extract the core topic from a transcript for dynamic image generation.
 
         Strips common filler words and returns the meaningful content.
         """
-        # Remove common filler words/patterns
-        import re
         filler = re.compile(
             r'\b(show me|tell me about|explain|what is|what are|let\'?s talk about|'
             r'can you|i want to|let\'?s|please|the|a |an |is |are |was |were |'
@@ -156,14 +492,23 @@ class MockProvider(LLMProvider):
         """
         Generate a dynamic image response from the raw transcript.
 
-        When no keyword matches, this creates a unique image prompt based
-        on what the teacher actually said, so every input produces a
-        relevant, high-quality image.
+        When no keyword matches, this creates an image prompt based on the
+        KEY PHRASES of what was said (not filler-degraded fragments), so
+        unmatched topics still get a sensible educational illustration.
         """
-        topic = self._extract_topic(transcript)
+        # Keep the most meaningful words (nouns-ish, >3 chars) instead of
+        # raw filler-stripped fragments that read like gibberish
+        words = re.findall(r"[a-zA-Z]{4,}", transcript.lower())
+        stop = {
+            "show", "tell", "about", "please", "just", "like", "this",
+            "that", "with", "have", "does", "would", "could", "want",
+            "make", "give", "some", "more", "when", "what", "your", "them",
+            "they", "then", "than", "into", "from", "onto", "very", "really",
+        }
+        key_words = [w for w in words if w not in stop][:6]
+        topic = " ".join(key_words) if key_words else self._extract_topic(transcript)
         title = topic[:50].title() if topic else "Exploration"
 
-        # Build a rich, specific image prompt from the actual words spoken
         image_prompt = (
             f"Professional educational scientific illustration of {topic}. "
             f"Detailed textbook-quality diagram with labeled components and annotations. "
@@ -208,8 +553,9 @@ class MockProvider(LLMProvider):
         """
         Return a mock response based on keyword matching.
 
-        If no keyword matches, generates a dynamic image from the transcript
-        so every input produces a visualization.
+        On a keyword match, spoken numeric parameters and math expressions are
+        extracted and merged into the canned response. If no keyword matches,
+        a dynamic image is generated from the transcript.
         """
         # Extract transcript from the user prompt.
         # The planner formats the prompt as:
@@ -235,6 +581,8 @@ class MockProvider(LLMProvider):
         # Try keyword matching first
         matched = self._match_keyword(transcript if transcript else user_prompt)
         if matched:
+            if transcript:
+                matched = self._enrich_with_speech_parameters(matched, transcript)
             return matched
 
         # No keyword matched — generate a dynamic image from the transcript

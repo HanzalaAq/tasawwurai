@@ -2,16 +2,15 @@
   "type": "biology.cell",
   "subject": "biology",
   "name": "Cell Structure",
-  "description": "Interactive cell diagram showing organelles with labels. Supports animal and plant cell types.",
+  "description": "Interactive cell diagram (animal or plant) with clickable organelles, animated organelle motion, and protein pathway visualization.",
   "parameters": {
     "type": "object",
     "properties": {
       "cellType": { "type": "string", "default": "animal", "description": "Cell type: animal, plant" },
-      "highlightOrganelle": { "type": "string", "default": "none", "description": "Organelle to highlight: nucleus, mitochondria, ribosome, er, golgi, lysosome, chloroplast, none" },
       "showLabels": { "type": "boolean", "default": true }
     },
-    "required": ["cellType"]
+    "required": []
   },
-  "capabilities": { "interactive": true, "animated": false, "3d": false },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
   "technology": "svg"
 }

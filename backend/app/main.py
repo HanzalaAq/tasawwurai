@@ -58,27 +58,6 @@ def _setup_mock_provider(provider) -> None:
             "reasoning": f"Mock: keyword matched for {viz_type}",
         }
 
-    def _img(subject: str, concept: str, title: str, explanation: str,
-             image_prompt: str, key_points: list[str] | None = None) -> dict:
-        """Helper to build an image-only PlannerResponse dict."""
-        return {
-            "command": {
-                "action": "new",
-                "subject": subject,
-                "concept": concept,
-                "visualization": {"type": "placeholder", "parameters": {}},
-                "theory": {
-                    "title": title,
-                    "explanation": explanation,
-                    "formulas": [],
-                    "key_points": key_points or [],
-                },
-                "render_mode": "image",
-                "image_prompt": image_prompt,
-            },
-            "reasoning": f"Mock: keyword matched for image ({concept})",
-        }
-
     # --- Physics ---
     projectile = _sim(
         "physics", "projectile_motion", "physics.projectile",
@@ -91,7 +70,9 @@ def _setup_mock_provider(provider) -> None:
         ["Horizontal velocity stays constant", "Vertical velocity changes due to gravity",
          "Maximum range at 45 degrees"],
     )
-    for kw in ["projectile", "throw", "launch", "parabola", "trajectory", "thrown"]:
+    for kw in ["projectile", "projectiles", "projectile motion", "throw", "throws",
+               "throwing", "thrown", "launch", "launching", "launched",
+               "trajectory", "trajectories", "cannon", "ballistics"]:
         provider.register_response(kw, projectile)
 
     wave = _sim(
@@ -105,7 +86,8 @@ def _setup_mock_provider(provider) -> None:
         ["Transverse waves: displacement perpendicular to propagation",
          "Longitudinal waves: displacement parallel to propagation"],
     )
-    for kw in ["wave", "frequency", "amplitude", "wavelength", "vibration", "oscillation"]:
+    for kw in ["wave", "waves", "frequency", "amplitude", "wavelength",
+               "vibration", "sound", "hertz", "periodic motion"]:
         provider.register_response(kw, wave)
 
     free_fall = _sim(
@@ -119,7 +101,8 @@ def _setup_mock_provider(provider) -> None:
         ["Acceleration is constant at g = 9.81 m/s\u00b2",
          "Mass does not affect fall speed in vacuum"],
     )
-    for kw in ["free fall", "falling", "gravity", "drop", "acceleration due to gravity"]:
+    for kw in ["free fall", "falling", "falls", "gravity", "gravitational",
+               "drop", "dropped", "dropping", "acceleration due to gravity"]:
         provider.register_response(kw, free_fall)
 
     pendulum = _sim(
@@ -133,7 +116,8 @@ def _setup_mock_provider(provider) -> None:
         ["Period depends on length, not mass",
          "Small angle approximation: sin(theta) ~ theta"],
     )
-    for kw in ["pendulum", "swing", "oscillat"]:
+    for kw in ["pendulum", "swing", "swinging", "oscillation", "oscillations",
+               "oscillating", "simple harmonic"]:
         provider.register_response(kw, pendulum)
 
     # --- Mathematics ---
@@ -148,7 +132,8 @@ def _setup_mock_provider(provider) -> None:
         ["The vertex is the minimum or maximum point",
          "The discriminant determines the number of real roots"],
     )
-    for kw in ["quadratic", "parabola function", "x squared", "x^2", "second degree"]:
+    for kw in ["quadratic", "quadratics", "parabola", "parabolas", "x squared",
+               "x^2", "second degree"]:
         provider.register_response(kw, quadratic)
 
     function_graph = _sim(
@@ -161,8 +146,11 @@ def _setup_mock_provider(provider) -> None:
         ["Domain: set of valid inputs", "Range: set of possible outputs",
          "Zeros: where f(x) = 0"],
     )
-    for kw in ["function", "graph", "plot", "sine", "cosine", "sin(", "cos(",
-               "curve", "equation graph"]:
+    for kw in ["function", "functions", "graph", "graphs", "plot", "plotting",
+               "sine", "cosine", "curve", "curves", "sin(", "cos(",
+               "exponential", "logarithm", "logarithmic", "log function",
+               "natural log", "trigonometric", "trigonometry", "polynomial",
+               "linear function", "square root"]:
         provider.register_response(kw, function_graph)
 
     derivative = _sim(
@@ -176,7 +164,8 @@ def _setup_mock_provider(provider) -> None:
         ["Positive derivative = function is increasing",
          "Zero derivative = possible maximum or minimum"],
     )
-    for kw in ["derivative", "differentiat", "slope", "rate of change", "tangent"]:
+    for kw in ["derivative", "derivatives", "differentiate", "differentiation",
+               "differentiating", "slope", "rate of change", "tangent"]:
         provider.register_response(kw, derivative)
 
     vector = _sim(
@@ -190,7 +179,8 @@ def _setup_mock_provider(provider) -> None:
         ["Vectors can be added component-wise",
          "Dot product measures alignment between vectors"],
     )
-    for kw in ["vector", "magnitude", "direction", "component"]:
+    for kw in ["vector", "vectors", "magnitude", "direction", "component",
+               "components", "dot product", "resultant"]:
         provider.register_response(kw, vector)
 
     # --- Computer Science ---
@@ -204,7 +194,8 @@ def _setup_mock_provider(provider) -> None:
         ["In-order traversal gives sorted output for BST",
          "Time complexity: O(log n) for balanced trees"],
     )
-    for kw in ["binary tree", "tree", "node", "leaf", "traversal"]:
+    for kw in ["binary tree", "binary trees", "tree", "trees", "node", "nodes",
+               "traversal", "bst", "binary search tree", "leaf", "leaves"]:
         provider.register_response(kw, binary_tree)
 
     sorting = _sim(
@@ -218,7 +209,9 @@ def _setup_mock_provider(provider) -> None:
         ["Bubble sort compares adjacent elements",
          "Merge sort uses divide and conquer"],
     )
-    for kw in ["sort", "bubble", "merge sort", "quick sort", "algorithm", "sorting"]:
+    for kw in ["sort", "sorting", "sorted", "bubble", "bubble sort", "merge sort",
+               "mergesort", "quick sort", "quicksort", "insertion sort",
+               "selection sort", "algorithm", "algorithms"]:
         provider.register_response(kw, sorting)
 
     bfs_dfs = _sim(
@@ -232,84 +225,82 @@ def _setup_mock_provider(provider) -> None:
         ["BFS uses a queue", "DFS uses a stack (or recursion)",
          "BFS finds shortest path in unweighted graphs"],
     )
-    for kw in ["bfs", "dfs", "breadth", "depth", "graph traversal", "graph"]:
+    for kw in ["bfs", "dfs", "breadth first", "breadth-first", "depth first",
+               "depth-first", "graph traversal", "graph search", "search algorithm",
+               "shortest path"]:
         provider.register_response(kw, bfs_dfs)
 
-    # --- Biology (image-based) ---
-    for kw in ["cell", "organism", "organ", "tissue"]:
-        provider.register_response(kw, _img(
-            "biology", "cell_structure",
-            "Cell Structure",
-            "Cells are the basic building blocks of all living organisms. "
-            "Animal and plant cells share many organelles but differ in key ways.",
-            "Scientific textbook cross-section illustration of an animal cell. The cell is shown "
-            "as a large circular cross-section with a soft pink membrane boundary. Inside, the "
-            "nucleus is a prominent dark blue sphere labeled 'Nucleus' with visible nucleolus. "
-            "Mitochondria are shown as red bean-shaped organelles labeled 'Mitochondria'. "
-            "The endoplasmic reticulum appears as winding purple tubes near the nucleus, "
-            "and the Golgi apparatus as stacked yellow crescents. Small dots along the ER are "
-            "labeled 'Ribosomes'. Clean white background with soft pastel colors, callout lines "
-            "pointing to each organelle with text labels. Highly detailed, professional educational "
-            "quality scientific illustration.",
-            key_points=["Nucleus contains DNA", "Mitochondria produce ATP (energy)",
-                        "Cell membrane controls what enters and exits"],
-        ))
+    # --- Biology (interactive renderers) ---
+    cell = _sim(
+        "biology", "cell_structure", "biology.cell",
+        {"cellType": "animal", "showLabels": True},
+        "Cell Structure",
+        "Cells are the basic building blocks of all living organisms. Animal and "
+        "plant cells share many organelles but differ in key ways. Click any "
+        "organelle in the visualization to learn its function.",
+        [],
+        ["Nucleus contains DNA and controls the cell",
+         "Mitochondria produce ATP (energy)",
+         "Cell membrane controls what enters and exits"],
+    )
+    for kw in ["cell", "cells", "organelle", "organelles", "organism", "tissue",
+               "membrane", "mitochondria", "cytoplasm", "ribosome",
+               "golgi", "endoplasmic reticulum"]:
+        provider.register_response(kw, cell)
 
-    for kw in ["dna", "gene", "chromosome", "replication", "genetic"]:
-        provider.register_response(kw, _img(
-            "biology", "dna_replication",
-            "DNA Structure & Replication",
-            "DNA is a double helix that carries genetic information. "
-            "It replicates by unwinding and using each strand as a template.",
-            "Scientific molecular biology illustration of a DNA double helix structure. "
-            "The two twisting strands are rendered in 3D with blue and green sugar-phosphate "
-            "backbones. Between them, horizontal rungs show the nucleotide base pairs: "
-            "Adenine (A) paired with Thymine (T) in warm colors, and Guanine (G) paired "
-            "with Cytosine (C) in cool colors, each pair labeled with letters. Thin dashed "
-            "lines represent hydrogen bonds between bases. Arrows along the strands indicate "
-            "5' to 3' directionality. Soft gradient background from white to light blue, "
-            "clean professional educational diagram with callout labels, highly detailed.",
-            key_points=["Adenine pairs with Thymine", "Guanine pairs with Cytosine",
-                        "DNA replicates semi-conservatively"],
-        ))
+    dna = _sim(
+        "biology", "dna_replication", "biology.dna_replication",
+        {"basePairs": 12, "animating": True, "showLabels": True},
+        "DNA Structure & Replication",
+        "DNA is a double helix that carries genetic information. It replicates by "
+        "unwinding and using each strand as a template for a new complementary "
+        "strand. Watch the replication fork travel down the helix.",
+        [{"name": "Base Pairs", "latex": "A \\leftrightarrow T, \\quad G \\leftrightarrow C"}],
+        ["Adenine (A) pairs with Thymine (T)",
+         "Guanine (G) pairs with Cytosine (C)",
+         "DNA replicates semi-conservatively"],
+    )
+    for kw in ["dna", "gene", "genes", "genetics", "genetic", "chromosome",
+               "chromosomes", "replication", "helix", "double helix",
+               "nucleotide", "base pair", "base pairs"]:
+        provider.register_response(kw, dna)
 
-    # --- Chemistry (image-based) ---
-    for kw in ["molecule", "bond", "chemical bond", "compound"]:
-        provider.register_response(kw, _img(
-            "chemistry", "molecule",
-            "Molecular Structure",
-            "Molecules are formed when atoms bond together. The shape of a molecule "
-            "determines its chemical properties and reactivity.",
-            "3D rendered educational chemistry diagram of a water molecule (H2O) in "
-            "ball-and-stick model style. A large red sphere labeled 'Oxygen (O)' sits at "
-            "the center, connected to two smaller white spheres labeled 'Hydrogen (H)' by "
-            "gray cylindrical bonds. The bond angle of 104.5 degrees is marked with a "
-            "curved arrow between the bonds. Electron pairs are shown as small blue dots "
-            "shared between atoms. The background is clean white with a subtle grid. "
-            "Professional scientific illustration with vibrant colors, labeled callouts "
-            "for each element and bond angle, highly detailed educational quality.",
-            key_points=["Covalent bonds share electrons", "Molecular shape affects properties",
-                        "Bond angles determined by electron repulsion"],
-        ))
+    # --- Chemistry (interactive renderers) ---
+    molecule = _sim(
+        "chemistry", "molecule", "chemistry.molecule",
+        {"molecule": "water", "showAngles": True, "showLabels": True},
+        "Molecular Structure",
+        "Molecules are formed when atoms bond together. The shape of a molecule "
+        "determines its chemical properties and reactivity. Switch between "
+        "presets to compare bond angles and structures.",
+        [],
+        ["Covalent bonds share electrons",
+         "Molecular shape affects properties",
+         "Bond angles determined by electron repulsion"],
+    )
+    for kw in ["molecule", "molecules", "molecular", "bond", "bonds", "bonding",
+               "chemical bond", "compound", "compounds", "covalent",
+               "water molecule", "methane", "ammonia", "carbon dioxide",
+               "sodium chloride"]:
+        provider.register_response(kw, molecule)
 
-    for kw in ["atom", "electron", "proton", "neutron", "nucleus", "atomic"]:
-        provider.register_response(kw, _img(
-            "chemistry", "atomic_structure",
-            "Atomic Structure",
-            "Atoms consist of a dense nucleus (protons + neutrons) surrounded by "
-            "electrons in orbital shells.",
-            "Scientific textbook illustration of atomic structure using the Bohr model. "
-            "At the center, a tightly packed nucleus contains red spheres (protons, labeled "
-            "'p+') and blue spheres (neutrons, labeled 'n0'). Surrounding the nucleus are "
-            "three concentric orbital shells (K, L, M) drawn as thin gray circles. Small "
-            "bright yellow dots orbit on each shell representing electrons (labeled 'e-'). "
-            "The shells are spaced proportionally. Arrows show electron transitions between "
-            "shells. Clean white background with vibrant primary colors for particles, "
-            "callout labels for each component. Professional educational diagram, highly "
-            "detailed and clearly labeled.",
-            key_points=["Protons define the element", "Electrons determine chemical behavior",
-                        "Neutrons add mass but no charge"],
-        ))
+    atom = _sim(
+        "chemistry", "atomic_structure", "chemistry.atomic_structure",
+        {"element": "carbon", "showLabels": True},
+        "Atomic Structure",
+        "Atoms consist of a dense nucleus (protons + neutrons) surrounded by "
+        "electrons in orbital shells. Try the Excite Electron button to see a "
+        "photon absorption and shell jump.",
+        [{"name": "Atomic Number", "latex": "Z = \\text{number of protons}"},
+         {"name": "Mass Number", "latex": "A = Z + N"}],
+        ["Protons define the element",
+         "Electrons determine chemical behavior",
+         "Neutrons add mass but no charge"],
+    )
+    for kw in ["atom", "atoms", "atomic", "electron", "electrons", "proton",
+               "protons", "neutron", "neutrons", "bohr", "electron shell",
+               "orbital", "element"]:
+        provider.register_response(kw, atom)
 
 
 @asynccontextmanager

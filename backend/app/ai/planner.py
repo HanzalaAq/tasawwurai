@@ -71,6 +71,11 @@ CRITICAL RULES:
 RENDER MODE RULES:
 You must set "render_mode" to one of: "simulation", "image", or "both".
 
+STRONG PREFERENCE FOR SIMULATIONS: an interactive simulation is always clearer
+and more accurate than an AI-generated image (AI images often garble labels
+and scientific detail). Only choose "image" when NO catalog entry fits the
+concept at all. When in doubt, pick the closest simulation from the catalog.
+
 - "simulation": Use when the concept matches a registered interactive visualization
   from the catalog below. Fill in the visualization type and parameters as usual.
 
@@ -92,9 +97,10 @@ You must set "render_mode" to one of: "simulation", "image", or "both".
   - End with a quality cue: "highly detailed", "clean and minimal",
     "professional educational quality".
 
-- "both": Use when a simulation is available AND an illustrative image would add
-  value. For example, showing a projectile simulation alongside a diagram of forces.
-  Fill in both the visualization parameters and the image_prompt.
+- "both": Use sparingly — only when a simulation is available AND a broad contextual
+  scene (e.g., a real-world photograph-like scene) genuinely adds value. Do NOT use
+  "both" for the same content the simulation already shows; the image cannot render
+  precise labels and will look wrong next to the accurate simulation.
 
 AVAILABLE VISUALIZATION TYPES:
 {catalog}
@@ -207,11 +213,13 @@ class AIPlanner:
         cmd = response.command
         render_mode = cmd.render_mode
 
-        # --- Enrich image prompts with transcript context for unique images ---
-        # When using MockProvider, keyword matches return the same canned prompt.
-        # By appending the actual transcript, each input generates a different image.
-        if cmd.image_prompt and transcript:
-            cmd.image_prompt = f"{cmd.image_prompt} Context: {transcript.strip()}"
+        # --- Keep image prompts clean ---
+        # The image_prompt is already a complete, specific description written
+        # by the LLM (or the mock catalog). Appending the raw transcript only
+        # dilutes it with filler words and confuses the image model, so we
+        # leave it untouched. Length is capped to stay within URL limits.
+        if cmd.image_prompt and len(cmd.image_prompt) > 800:
+            cmd.image_prompt = cmd.image_prompt[:800]
 
         # --- IMAGE mode: skip simulation validation, return image command ---
         if render_mode == "image":
