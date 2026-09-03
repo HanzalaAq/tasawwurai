@@ -234,23 +234,35 @@ export default function SessionPage() {
 }
 
 // --- Inline test controls (simplified from old TestPanel) ---
+
 function TestControls({ onSend, disabled }: { onSend: (m: ClientMessage) => void; disabled: boolean }) {
   const scenarios = [
     { subject: "physics", concept: "projectile_motion", label: "Projectile" },
     { subject: "physics", concept: "wave_motion", label: "Wave" },
     { subject: "physics", concept: "free_fall", label: "Free Fall" },
     { subject: "physics", concept: "pendulum", label: "Pendulum" },
+    { subject: "physics", concept: "simple_harmonic_motion", label: "Spring" },
+    { subject: "physics", concept: "momentum_collisions", label: "Collision" },
+    { subject: "physics", concept: "ray_optics", label: "Lens" },
     { subject: "math", concept: "quadratic_function", label: "Quadratic" },
     { subject: "math", concept: "derivative", label: "Derivative" },
     { subject: "math", concept: "vector", label: "Vector" },
+    { subject: "math", concept: "unit_circle", label: "Unit Circle" },
+    { subject: "math", concept: "integration", label: "Riemann" },
     { subject: "computer_science", concept: "sorting_algorithm", label: "Sorting" },
     { subject: "computer_science", concept: "binary_tree", label: "Tree" },
     { subject: "computer_science", concept: "bfs_dfs", label: "BFS/DFS" },
+    { subject: "computer_science", concept: "pathfinding", label: "Pathfinding" },
+    { subject: "computer_science", concept: "recursion", label: "Hanoi" },
     { subject: "biology", concept: "dna_replication", label: "DNA" },
     { subject: "biology", concept: "cell_structure", label: "Cell" },
+    { subject: "biology", concept: "mendelian_genetics", label: "Punnett" },
+    { subject: "biology", concept: "enzyme_kinetics", label: "Enzyme" },
     { subject: "chemistry", concept: "atomic_structure", label: "Atom" },
     { subject: "chemistry", concept: "molecule", label: "Molecule" },
+    { subject: "chemistry", concept: "acid_base_titration", label: "Titration" },
   ];
+// ... existing code ...
 
   return (
     <div className="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4">

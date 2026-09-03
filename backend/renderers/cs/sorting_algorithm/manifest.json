@@ -7,9 +7,8 @@
     "type": "object",
     "properties": {
       "algorithm": { "type": "string", "default": "bubble", "description": "Algorithm: bubble, selection, insertion, merge, quick" },
-      "data": { "type": "array", "default": [64, 34, 25, 12, 22, 11, 90], "description": "Array of numbers to sort" },
-      "speed": { "type": "number", "default": 1.0, "min": 0.1, "max": 5.0, "description": "Animation speed multiplier" },
-      "highlightComparing": { "type": "boolean", "default": true }
+      "arraySize": { "type": "number", "default": 15, "min": 5, "max": 40, "description": "Number of elements to sort" },
+      "speed": { "type": "number", "default": 1.0, "min": 0.1, "max": 5.0, "description": "Animation speed multiplier" }
     },
     "required": ["algorithm"]
   },

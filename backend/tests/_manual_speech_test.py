@@ -2,9 +2,9 @@
 import asyncio
 import sys
 
-sys.path.insert(0, r"c:\Users\Hanzala\OneDrive\Desktop\TasawwurAI\backend")
+sys.path.insert(0, r"c:\Users\HAROON TRADERS\tasawwurai\backend")
 
-from app.ai.openai_provider import (
+from app.ai.mock_provider import (
     MockProvider,
     extract_expression,
     extract_speech_parameters,

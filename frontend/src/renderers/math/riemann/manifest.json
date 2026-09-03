@@ -1,0 +1,19 @@
+{
+  "type": "math.riemann",
+  "subject": "math",
+  "name": "Riemann Sums & Integration",
+  "description": "Visual integration using left, right, and midpoint Riemann sums. Shows rectangles under the curve, the running sum, the exact integral via Simpson's rule, and the error as partition count increases.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "expression": { "type": "string", "default": "x^2" },
+      "n": { "type": "number", "default": 8, "min": 1, "max": 100, "unit": "rectangles" },
+      "method": { "type": "string", "default": "left" },
+      "xMin": { "type": "number", "default": 0, "min": -10, "max": 10, "unit": "" },
+      "xMax": { "type": "number", "default": 2, "min": -10, "max": 20, "unit": "" }
+    },
+    "required": ["expression", "n", "method"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

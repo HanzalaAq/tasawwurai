@@ -1,0 +1,19 @@
+{
+  "type": "physics.collision",
+  "subject": "physics",
+  "name": "Collision Lab",
+  "description": "Two colliding balls demonstrating conservation of momentum and kinetic energy loss. Restitution slider ranges from perfectly inelastic (e=0) to perfectly elastic (e=1) collisions.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "massA": { "type": "number", "default": 2.0, "min": 0.5, "max": 10, "unit": "kg" },
+      "velocityA": { "type": "number", "default": 4.0, "min": -10, "max": 10, "unit": "m/s" },
+      "massB": { "type": "number", "default": 4.0, "min": 0.5, "max": 10, "unit": "kg" },
+      "velocityB": { "type": "number", "default": -2.0, "min": -10, "max": 10, "unit": "m/s" },
+      "restitution": { "type": "number", "default": 1.0, "min": 0, "max": 1, "unit": "ratio" }
+    },
+    "required": ["massA", "velocityA", "massB", "velocityB"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

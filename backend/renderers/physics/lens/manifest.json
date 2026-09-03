@@ -1,0 +1,18 @@
+{
+  "type": "physics.lens",
+  "subject": "physics",
+  "name": "Thin Lens Ray Optics",
+  "description": "Ray diagram for converging and diverging lenses. Shows principal rays, focal points, real and virtual images, magnification, and the thin lens equation 1/f = 1/do + 1/di.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "focalLength": { "type": "number", "default": 15, "min": 5, "max": 40, "unit": "cm" },
+      "objectDistance": { "type": "number", "default": 40, "min": 10, "max": 80, "unit": "cm" },
+      "objectHeight": { "type": "number", "default": 8, "min": 2, "max": 15, "unit": "cm" },
+      "lensType": { "type": "string", "default": "converging" }
+    },
+    "required": ["focalLength", "objectDistance"]
+  },
+  "capabilities": { "interactive": true, "animated": false, "3d": false },
+  "technology": "canvas-2d"
+}

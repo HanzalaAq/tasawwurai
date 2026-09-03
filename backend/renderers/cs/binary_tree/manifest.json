@@ -6,12 +6,11 @@
   "parameters": {
     "type": "object",
     "properties": {
-      "values": { "type": "array", "default": [50, 30, 70, 20, 40, 60, 80], "description": "Array of values to build the tree" },
-      "traversal": { "type": "string", "default": "none", "description": "Traversal type: inorder, preorder, postorder, none" },
-      "highlightNode": { "type": "number", "default": -1, "description": "Value of node to highlight (-1 for none)" },
-      "operation": { "type": "string", "default": "display", "description": "Current operation: display, insert, delete, search" }
+      "depth": { "type": "number", "default": 3, "min": 1, "max": 5, "description": "Tree depth to generate" },
+      "showTraversal": { "type": "boolean", "default": true, "description": "Show traversal animation controls" },
+      "traversalType": { "type": "string", "default": "inorder", "description": "Traversal type: inorder, preorder, postorder" }
     },
-    "required": ["values"]
+    "required": []
   },
   "capabilities": { "interactive": true, "animated": true, "3d": false },
   "technology": "svg"

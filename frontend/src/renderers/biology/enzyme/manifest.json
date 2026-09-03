@@ -1,0 +1,18 @@
+{
+  "type": "biology.enzyme",
+  "subject": "biology",
+  "name": "Enzyme Kinetics (Michaelis-Menten)",
+  "description": "Enzyme reaction rate simulation with the Michaelis-Menten curve, animated substrate-to-product conversion at the active site, and a competitive inhibitor that shifts apparent Km.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "substrate": { "type": "number", "default": 40, "min": 1, "max": 100, "unit": "mM" },
+      "vmax": { "type": "number", "default": 60, "min": 10, "max": 100, "unit": "µmol/s" },
+      "km": { "type": "number", "default": 15, "min": 1, "max": 50, "unit": "mM" },
+      "inhibitor": { "type": "number", "default": 0, "min": 0, "max": 100, "unit": "%" }
+    },
+    "required": ["substrate", "vmax", "km"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "canvas-2d"
+}

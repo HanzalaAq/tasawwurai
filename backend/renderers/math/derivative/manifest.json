@@ -7,11 +7,11 @@
     "type": "object",
     "properties": {
       "expression": { "type": "string", "default": "x^3 - 3x", "description": "The function to differentiate" },
-      "point": { "type": "number", "default": 1.0, "min": -10, "max": 10, "description": "The x-point where the tangent line is shown" },
-      "xMin": { "type": "number", "default": -5, "min": -100, "max": 0 },
-      "xMax": { "type": "number", "default": 5, "min": 0.1, "max": 100 }
+      "xMin": { "type": "number", "default": -4, "min": -100, "max": 0 },
+      "xMax": { "type": "number", "default": 4, "min": 0.1, "max": 100 },
+      "showTangent": { "type": "boolean", "default": true, "description": "Show the animated tangent line" }
     },
-    "required": ["expression", "point"]
+    "required": ["expression"]
   },
   "capabilities": { "interactive": true, "animated": true, "3d": false },
   "technology": "canvas-2d"

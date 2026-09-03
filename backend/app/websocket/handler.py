@@ -366,6 +366,247 @@ MOCK_VISUALIZATIONS = {
             ],
         ),
     },
+    
+    # --- Physics: Spring-Mass (SHM) ---
+    "physics.simple_harmonic_motion": {
+        "visualization": VisualizationPayload(
+            type="physics.spring_mass",
+            parameters={"mass": 2.0, "springConstant": 50, "amplitude": 0.8, "damping": 0.05},
+        ),
+        "theory": TheoryBlock(
+            title="Spring-Mass Oscillator",
+            explanation=(
+                "A mass on a spring oscillates with simple harmonic motion. The restoring "
+                "force follows Hooke's law, F = -kx, and the period depends only on the "
+                "mass and spring constant — not on amplitude."
+            ),
+            formulas=[
+                FormulaItem(name="Hooke's Law", latex="F = -kx"),
+                FormulaItem(name="Period", latex="T = 2\\pi\\sqrt{m/k}"),
+            ],
+            key_points=[
+                "Acceleration is proportional to displacement, in the opposite direction",
+                "Energy trades between kinetic and elastic potential",
+                "Damping gradually removes energy from the system",
+            ],
+        ),
+    },
+    # --- Physics: Collisions (Momentum) ---
+    "physics.momentum_collisions": {
+        "visualization": VisualizationPayload(
+            type="physics.collision",
+            parameters={"massA": 2, "velocityA": 4, "massB": 4, "velocityB": -2, "restitution": 1},
+        ),
+        "theory": TheoryBlock(
+            title="Collision Lab",
+            explanation=(
+                "When two objects collide, momentum is always conserved. Kinetic energy is "
+                "conserved only in perfectly elastic collisions — watch it convert to heat "
+                "and sound as the restitution drops below one."
+            ),
+            formulas=[
+                FormulaItem(name="Momentum", latex="p = mv"),
+                FormulaItem(name="Elastic Collision", latex="\\frac{1}{2}m_1v_1^2 + \\frac{1}{2}m_2v_2^2 = \\text{const}"),
+            ],
+            key_points=[
+                "Momentum is conserved in all collisions",
+                "Perfectly inelastic collisions lose the most kinetic energy",
+                "Equal masses exchange velocities in elastic collisions",
+            ],
+        ),
+    },
+    # --- Physics: Thin Lens (Ray Optics) ---
+    "physics.ray_optics": {
+        "visualization": VisualizationPayload(
+            type="physics.lens",
+            parameters={"focalLength": 15, "objectDistance": 40, "objectHeight": 8, "lensType": "converging"},
+        ),
+        "theory": TheoryBlock(
+            title="Thin Lens Ray Optics",
+            explanation=(
+                "Light rays refract through a lens and converge (or diverge) to form an image. "
+                "The thin lens equation relates focal length, object distance, and image "
+                "distance. Drag the object past the focal point to see a real image "
+                "become virtual."
+            ),
+            formulas=[
+                FormulaItem(name="Thin Lens Equation", latex="\\frac{1}{f} = \\frac{1}{d_o} + \\frac{1}{d_i}"),
+                FormulaItem(name="Magnification", latex="m = -d_i/d_o = h_i/h_o"),
+            ],
+            key_points=[
+                "Converging lenses focus parallel rays to the focal point",
+                "An object beyond F forms a real, inverted image",
+                "Diverging lenses always form virtual, upright images",
+            ],
+        ),
+    },
+    # --- Math: Unit Circle ---
+    "math.unit_circle": {
+        "visualization": VisualizationPayload(
+            type="math.unit_circle",
+            parameters={"angle": 45, "function": "sin", "speed": 1},
+        ),
+        "theory": TheoryBlock(
+            title="Unit Circle & Trigonometry",
+            explanation=(
+                "Every point on the unit circle is (cos θ, sin θ). Watch the angle sweep "
+                "around the circle and see how sine and cosine are simply the coordinates "
+                "of that point — the graph draws itself."
+            ),
+            formulas=[
+                FormulaItem(name="Pythagorean Identity", latex="\\sin^2\\theta + \\cos^2\\theta = 1"),
+                FormulaItem(name="Tangent", latex="\\tan\\theta = \\frac{\\sin\\theta}{\\cos\\theta}"),
+            ],
+            key_points=[
+                "Sine is the y-coordinate, cosine the x-coordinate",
+                "Tangent is the slope of the radius line",
+                "The four quadrants fix the signs of each ratio",
+            ],
+        ),
+    },
+    # --- Math: Riemann Sums ---
+    "math.integration": {
+        "visualization": VisualizationPayload(
+            type="math.riemann",
+            parameters={"expression": "x^2", "n": 8, "method": "left", "xMin": 0, "xMax": 2},
+        ),
+        "theory": TheoryBlock(
+            title="Riemann Sums & Integration",
+            explanation=(
+                "To find the area under a curve, slice it into rectangles. As the number "
+                "of rectangles grows, the sum converges to the exact integral — that "
+                "limit IS the definite integral."
+            ),
+            formulas=[
+                FormulaItem(name="Riemann Sum", latex="\\int_a^b f(x)\\,dx = \\lim_{n \\to \\infty} \\sum_{i=1}^{n} f(x_i)\\,\\Delta x"),
+                FormulaItem(name="Fundamental Theorem", latex="\\int_a^b f(x)\\,dx = F(b) - F(a)"),
+            ],
+            key_points=[
+                "Left sums overestimate increasing functions",
+                "Midpoint sums converge faster than left or right",
+                "The exact area is the limit as n approaches infinity",
+            ],
+        ),
+    },
+    # --- CS: Pathfinding ---
+    "computer_science.pathfinding": {
+        "visualization": VisualizationPayload(
+            type="cs.pathfinding",
+            parameters={"algorithm": "astar", "wallDensity": 0.25, "speed": 5, "diagonal": True},
+        ),
+        "theory": TheoryBlock(
+            title="Pathfinding: Dijkstra, A*, Greedy",
+            explanation=(
+                "Grid search algorithms find the shortest path very differently. Dijkstra "
+                "expands uniformly in all directions, A* steers toward the goal with a "
+                "heuristic, and Greedy trusts the heuristic alone — fast but not always optimal."
+            ),
+            formulas=[
+                FormulaItem(name="A* Cost", latex="f(n) = g(n) + h(n)"),
+                FormulaItem(name="Dijkstra", latex="O((V+E)\\log V)"),
+            ],
+            key_points=[
+                "Dijkstra guarantees the shortest path but explores everywhere",
+                "A* uses an admissible heuristic to prune the search",
+                "Greedy best-first can return suboptimal paths",
+            ],
+        ),
+    },
+    # --- CS: Tower of Hanoi ---
+    "computer_science.recursion": {
+        "visualization": VisualizationPayload(
+            type="cs.tower_of_hanoi",
+            parameters={"disks": 4, "speed": 1},
+        ),
+        "theory": TheoryBlock(
+            title="Tower of Hanoi (Recursion)",
+            explanation=(
+                "Move the whole stack to the target peg, one disk at a time, never "
+                "placing a larger disk on a smaller one. The recursive solution: move "
+                "n−1 disks aside, move the biggest disk, then move the stack on top."
+            ),
+            formulas=[
+                FormulaItem(name="Recurrence", latex="T(n) = 2T(n-1) + 1 = 2^n - 1"),
+            ],
+            key_points=[
+                "Base case: one disk moves directly",
+                "Each recursive call solves a smaller tower",
+                "Each extra disk doubles (plus one) the moves",
+            ],
+        ),
+    },
+    # --- Biology: Punnett Square ---
+    "biology.mendelian_genetics": {
+        "visualization": VisualizationPayload(
+            type="biology.punnett",
+            parameters={"parent1": "Aa", "parent2": "Aa", "traitDominant": "Tall", "traitRecessive": "Short"},
+        ),
+        "theory": TheoryBlock(
+            title="Punnett Square Heredity",
+            explanation=(
+                "Gregor Mendel's pea plants revealed how traits pass between generations. "
+                "Cross two heterozygous parents and watch the classic 3:1 phenotype ratio "
+                "appear — each square is an equally likely offspring."
+            ),
+            formulas=[
+                FormulaItem(name="Monohybrid Cross", latex="Aa \\times Aa \\Rightarrow 1AA : 2Aa : 1aa"),
+            ],
+            key_points=[
+                "Each parent contributes one allele at random",
+                "Heterozygotes show the dominant phenotype",
+                "Genotype ratio 1:2:1 gives phenotype ratio 3:1",
+            ],
+        ),
+    },
+    # --- Biology: Enzyme Kinetics ---
+    "biology.enzyme_kinetics": {
+        "visualization": VisualizationPayload(
+            type="biology.enzyme",
+            parameters={"substrate": 40, "vmax": 60, "km": 15, "inhibitor": 0},
+        ),
+        "theory": TheoryBlock(
+            title="Enzyme Kinetics (Michaelis-Menten)",
+            explanation=(
+                "Enzymes speed up reactions by binding substrates at the active site. "
+                "Rate rises with substrate concentration but saturates at Vmax as every "
+                "enzyme gets busy. Competitive inhibitors raise the apparent Km."
+            ),
+            formulas=[
+                FormulaItem(name="Michaelis-Menten", latex="v = \\frac{V_{max}[S]}{K_m + [S]}"),
+                FormulaItem(name="Lineweaver-Burk", latex="\\frac{1}{v} = \\frac{K_m}{V_{max}}\\frac{1}{[S]} + \\frac{1}{V_{max}}"),
+            ],
+            key_points=[
+                "Vmax is reached when the enzyme is saturated",
+                "Km is the substrate concentration at half of Vmax",
+                "Competitive inhibitors compete for the active site",
+            ],
+        ),
+    },
+    # --- Chemistry: Acid-Base Titration ---
+    "chemistry.acid_base_titration": {
+        "visualization": VisualizationPayload(
+            type="chemistry.titration",
+            parameters={"acidType": "strong", "acidConc": 0.1, "acidVolume": 25, "baseConc": 0.1, "titrantVolume": 0},
+        ),
+        "theory": TheoryBlock(
+            title="Acid-Base Titration",
+            explanation=(
+                "Add base to acid drop by drop and watch the pH climb — slowly at first "
+                "(the buffer region for weak acids), then rocketing through the equivalence "
+                "point, then leveling off in excess base."
+            ),
+            formulas=[
+                FormulaItem(name="pH", latex="pH = -\\log_{10}[H^+]"),
+                FormulaItem(name="Henderson-Hasselbalch", latex="pH = pK_a + \\log\\frac{[A^-]}{[HA]}"),
+            ],
+            key_points=[
+                "Strong acid + strong base: equivalence pH is 7",
+                "Weak acid equivalence pH is above 7",
+                "The buffer region resists pH change",
+            ],
+        ),
+    },
+
 }
 
 

@@ -1,0 +1,18 @@
+{
+  "type": "cs.pathfinding",
+  "subject": "computer_science",
+  "name": "Pathfinding: Dijkstra, A*, Greedy",
+  "description": "Animated grid maze search comparing Dijkstra's uniform-cost expansion, A* with heuristic guidance, and Greedy best-first search. Shows visited cells, frontier, and the final shortest path.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "algorithm": { "type": "string", "default": "astar" },
+      "wallDensity": { "type": "number", "default": 0.25, "min": 0, "max": 0.5 },
+      "speed": { "type": "number", "default": 5, "min": 1, "max": 20, "unit": "x" },
+      "diagonal": { "type": "boolean", "default": true }
+    },
+    "required": ["algorithm"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

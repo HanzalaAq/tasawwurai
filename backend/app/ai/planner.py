@@ -10,6 +10,7 @@ Architecture:
 
 from __future__ import annotations
 
+import json
 import logging
 import time
 import uuid
@@ -22,6 +23,7 @@ from pydantic import ValidationError
 from app.ai.context import LessonContext
 from app.ai.provider import LLMProvider, LLMProviderError
 from app.ai.registry import VisualizationRegistry
+from app.ai.schema_utils import clean_schema
 from app.ai.schemas import PlannerResponse, VisualizationCommand
 
 logger = logging.getLogger(__name__)
@@ -113,7 +115,8 @@ NEW TRANSCRIPT:
 "{transcript}"
 
 Analyze the new transcript and decide what visualization to show.
-Respond with a JSON object matching the PlannerResponse schema."""
+Respond with a JSON object matching the PlannerResponse schema:
+{response_schema}"""
 
 
 class AIPlanner:
@@ -146,6 +149,34 @@ class AIPlanner:
         if session_id in self.contexts:
             self.contexts[session_id].reset()
 
+    async def _repair_response(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        temperature: float,
+        error: ValidationError,
+    ) -> PlannerResponse | None:
+        """
+        Retry a malformed LLM response once, feeding the validation error
+        back so the model can correct its own JSON.
+        """
+        repair_prompt = (
+            f"{user_prompt}\n\n"
+            f"Your previous JSON response was invalid:\n{error}\n"
+            f"Return the corrected JSON object only."
+        )
+        try:
+            raw = await self.provider.complete(
+                system_prompt=system_prompt,
+                user_prompt=repair_prompt,
+                response_schema=PlannerResponse,
+                temperature=temperature,
+            )
+            return PlannerResponse(**raw)
+        except (LLMProviderError, ValidationError) as e:
+            logger.warning("Repair pass failed: %s", e)
+            return None
+
     async def plan(
         self,
         session_id: str,
@@ -167,9 +198,16 @@ class AIPlanner:
         # Build prompts
         catalog = self.registry.get_catalog_for_prompt()
         system_prompt = SYSTEM_PROMPT.format(catalog=catalog)
+        # Inline the response schema: not every endpoint enforces
+        # response_format/json_schema, so the prompt is the reliable channel
+        schema_text = json.dumps(
+            clean_schema(PlannerResponse.model_json_schema()),
+            separators=(",", ":"),
+        )
         user_prompt = USER_PROMPT_TEMPLATE.format(
             context=context.to_prompt_context(),
             transcript=transcript,
+            response_schema=schema_text,
         )
 
         # Call the LLM
@@ -198,12 +236,29 @@ class AIPlanner:
             else:
                 return None
 
+        # Fast path: "action": "none" needs no further validation — LLMs
+        # often return a minimal command object for small talk that would
+        # otherwise fail the strict Pydantic check and waste a repair call
+        raw_cmd = (
+            raw_response.get("command")
+            if isinstance(raw_response, dict) else None
+        )
+        if isinstance(raw_cmd, dict) and raw_cmd.get("action") == "none":
+            logger.info("AI: no visualization change needed (session=%s)", session_id)
+            return None
+
         # Validate with Pydantic
         try:
             response = PlannerResponse(**raw_response)
         except ValidationError as e:
-            logger.error("Invalid AI response in session %s: %s", session_id, e)
-            return None
+            logger.warning("Invalid AI response in session %s: %s", session_id, e)
+            # One repair pass before giving up
+            response = await self._repair_response(
+                system_prompt, user_prompt, temperature, e
+            )
+            if response is None:
+                logger.error("Repair pass failed in session %s", session_id)
+                return None
 
         # Check if action is "none"
         if response.command is None or response.command.action == "none":

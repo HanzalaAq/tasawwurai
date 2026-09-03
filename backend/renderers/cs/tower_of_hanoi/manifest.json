@@ -1,0 +1,16 @@
+{
+  "type": "cs.tower_of_hanoi",
+  "subject": "computer_science",
+  "name": "Tower of Hanoi (Recursion)",
+  "description": "Classic recursive puzzle animation. Disks move between three pegs with the optimal 2^n − 1 solution; step-through mode shows each recursive move for teaching recursion.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "disks": { "type": "number", "default": 4, "min": 1, "max": 8, "unit": "disks" },
+      "speed": { "type": "number", "default": 1.0, "min": 0.5, "max": 5, "unit": "x" }
+    },
+    "required": ["disks"]
+  },
+  "capabilities": { "interactive": true, "animated": true, "3d": false },
+  "technology": "svg"
+}

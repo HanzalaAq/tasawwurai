@@ -6,12 +6,15 @@
   "parameters": {
     "type": "object",
     "properties": {
-      "vectorA": { "type": "object", "default": { "x": 3, "y": 4 }, "description": "First vector {x, y}" },
-      "vectorB": { "type": "object", "default": { "x": 1, "y": 2 }, "description": "Second vector {x, y}" },
+      "x": { "type": "number", "default": 3, "description": "Vector A x-component" },
+      "y": { "type": "number", "default": 4, "description": "Vector A y-component" },
+      "bx": { "type": "number", "default": 1, "description": "Vector B x-component" },
+      "by": { "type": "number", "default": 2, "description": "Vector B y-component" },
       "operation": { "type": "string", "default": "add", "description": "Operation: add, subtract, scale, dot" },
-      "scalar": { "type": "number", "default": 1, "min": -5, "max": 5, "description": "Scalar for scale operation" }
+      "showComponents": { "type": "boolean", "default": true, "description": "Show component breakdown" },
+      "showMagnitude": { "type": "boolean", "default": true, "description": "Show magnitude readout" }
     },
-    "required": ["vectorA", "operation"]
+    "required": []
   },
   "capabilities": { "interactive": true, "animated": false, "3d": false },
   "technology": "svg"

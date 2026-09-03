@@ -8,11 +8,9 @@
     "properties": {
       "algorithm": { "type": "string", "default": "bfs", "description": "Algorithm: bfs, dfs" },
       "startNode": { "type": "string", "default": "A", "description": "Starting node label" },
-      "nodes": { "type": "array", "default": ["A", "B", "C", "D", "E", "F"], "description": "Graph node labels" },
-      "edges": { "type": "array", "default": [["A","B"], ["A","C"], ["B","D"], ["C","E"], ["D","F"]], "description": "Graph edges as [from, to] pairs" },
       "speed": { "type": "number", "default": 1.0, "min": 0.1, "max": 5.0 }
     },
-    "required": ["algorithm", "startNode"]
+    "required": ["algorithm"]
   },
   "capabilities": { "interactive": true, "animated": true, "3d": false },
   "technology": "svg"

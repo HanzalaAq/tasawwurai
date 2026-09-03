@@ -1,0 +1,18 @@
+{
+  "type": "biology.punnett",
+  "subject": "biology",
+  "name": "Punnett Square Heredity",
+  "description": "Monohybrid cross Punnett square with gamete headers, genotype color coding, and live genotype/phenotype ratios. Parents switch between homozygous dominant, heterozygous, and homozygous recessive.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "parent1": { "type": "string", "default": "Aa" },
+      "parent2": { "type": "string", "default": "Aa" },
+      "traitDominant": { "type": "string", "default": "Tall" },
+      "traitRecessive": { "type": "string", "default": "Short" }
+    },
+    "required": ["parent1", "parent2"]
+  },
+  "capabilities": { "interactive": true, "animated": false, "3d": false },
+  "technology": "html"
+}
