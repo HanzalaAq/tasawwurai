@@ -230,37 +230,57 @@ export function DemoMode({ onSend, disabled }: Props) {
   };
 
   return (
-    <div className="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-300">Demo Mode</h3>
-        <span className="rounded-full bg-purple-500/20 px-2 py-0.5 text-xs text-purple-300">
-          {currentIndex}/{statements.length}
+    <section className="rounded-xl border border-steel-200/80 bg-white/70 p-3.5">
+      <header className="mb-3 flex items-center justify-between">
+        <h3 className="font-mono text-[10px] uppercase tracking-widest text-steel-500">
+          Guided Demo
+        </h3>
+        {/* Progress ring */}
+        <span className="relative flex h-6 w-6 items-center justify-center">
+          <svg viewBox="0 0 24 24" className="h-6 w-6 -rotate-90">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="rgba(106,137,167,0.2)" strokeWidth="2.5" />
+            <circle
+              cx="12" cy="12" r="9" fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              className="text-azure-600 transition-all duration-500"
+              strokeDasharray={`${2 * Math.PI * 9}`}
+              strokeDashoffset={`${2 * Math.PI * 9 * (1 - currentIndex / statements.length)}`}
+            />
+          </svg>
+          <span className="absolute font-mono text-[8px] text-steel-500">
+            {currentIndex}/{statements.length}
+          </span>
         </span>
-      </div>
+      </header>
 
       {/* Topic selector */}
       <select
         value={topicId}
         onChange={(e) => handleTopicChange(e.target.value)}
         disabled={disabled}
-        className="mb-3 w-full rounded-lg border border-gray-700 bg-gray-900/80 px-2 py-1.5 text-xs text-gray-300 focus:border-purple-500 focus:outline-none disabled:opacity-40"
+        className="mb-3 w-full cursor-pointer rounded-lg border border-steel-200 bg-white px-2.5 py-1.5 text-xs text-dusk-700 transition-colors focus:border-azure-500/50 focus:outline-none focus:ring-1 focus:ring-azure-500/25 disabled:opacity-40"
       >
         {DEMO_TOPICS.map((t) => (
-          <option key={t.id} value={t.id}>
+          <option key={t.id} value={t.id} className="bg-white">
             {t.label}
           </option>
         ))}
       </select>
 
       {/* Current/next statement preview */}
-      <div className="mb-3 rounded-lg bg-gray-900/60 p-3 min-h-[60px]">
-        <p className="text-xs text-gray-500 mb-1">
-          {currentIndex < statements.length ? "Next statement:" : "Demo complete!"}
+      <div className="mb-3 min-h-[60px] rounded-lg border border-steel-200/80 bg-mist-200/70 p-3">
+        <p className="mb-1 font-mono text-[9px] uppercase tracking-widest text-steel-400">
+          {currentIndex < statements.length ? "Next statement" : "Demo complete"}
         </p>
         {currentIndex < statements.length && (
-          <p className="text-sm text-gray-300 italic">
+          <p className="text-xs italic leading-relaxed text-steel-600">
             &ldquo;{statements[currentIndex]}&rdquo;
           </p>
+        )}
+        {currentIndex >= statements.length && (
+          <p className="text-xs text-emerald-700/80">Lesson finished — pick another topic.</p>
         )}
       </div>
 
@@ -270,14 +290,14 @@ export function DemoMode({ onSend, disabled }: Props) {
           <button
             onClick={handlePlay}
             disabled={disabled || currentIndex >= statements.length}
-            className="flex-1 rounded-lg bg-purple-600 px-3 py-2 text-xs font-medium text-white hover:bg-purple-500 disabled:opacity-40"
+            className="flex-1 rounded-lg bg-gradient-to-r from-azure-700 to-azure-800 px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-azure-700/25 transition-all hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
           >
             {currentIndex === 0 ? "Start Demo" : "Resume"}
           </button>
         ) : (
           <button
             onClick={handlePause}
-            className="flex-1 rounded-lg bg-gray-600 px-3 py-2 text-xs font-medium text-white hover:bg-gray-500"
+            className="flex-1 rounded-lg border border-steel-300 bg-white px-3 py-2 text-xs font-semibold text-dusk-700 transition-all hover:bg-mist-200 active:scale-[0.98]"
           >
             Pause
           </button>
@@ -285,17 +305,17 @@ export function DemoMode({ onSend, disabled }: Props) {
         <button
           onClick={handleStep}
           disabled={disabled || isPlaying || currentIndex >= statements.length}
-          className="rounded-lg border border-gray-600 px-3 py-2 text-xs font-medium text-gray-300 hover:bg-gray-700 disabled:opacity-40"
+          className="rounded-lg border border-steel-300 px-3 py-2 text-xs font-medium text-steel-600 transition-all hover:bg-steel-100 hover:text-dusk-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
         >
           Step
         </button>
         <button
           onClick={handleReset}
-          className="rounded-lg border border-gray-600 px-3 py-2 text-xs font-medium text-gray-300 hover:bg-gray-700"
+          className="rounded-lg border border-steel-300 px-3 py-2 text-xs font-medium text-steel-600 transition-all hover:bg-steel-100 hover:text-dusk-700 active:scale-[0.98]"
         >
           Reset
         </button>
       </div>
-    </div>
+    </section>
   );
 }

@@ -1,18 +1,13 @@
 /**
- * LiveTranscription — rolling transcript feed.
+ * LiveTranscription — rolling transcript feed from voice input.
  *
  * Displays finalized speech-to-text sentences as they arrive from the
- * centralized VoiceInput component. This is a pure display component
- * with no speech recognition logic of its own.
+ * centralized VoiceInput component. Pure display — no speech logic.
  *
  * Features:
  *   - Animated slide-in for new entries
  *   - Progressive opacity (newer entries more prominent)
  *   - Auto-scroll to latest entry
- *   - Entry count badge
- *
- * Props:
- *   entries — array of transcript entries to display
  */
 
 "use client";
@@ -26,12 +21,11 @@ interface TranscriptEntry {
 
 interface Props {
   entries: TranscriptEntry[];
-  onDismiss?: () => void;
 }
 
 const MAX_DISPLAY = 6;
 
-export function LiveTranscription({ entries, onDismiss }: Props) {
+export function LiveTranscription({ entries }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const visible = entries.slice(-MAX_DISPLAY);
 
@@ -46,42 +40,49 @@ export function LiveTranscription({ entries, onDismiss }: Props) {
   }, [entries]);
 
   if (entries.length === 0) {
-    return null;
+    return (
+      <section className="rounded-xl border border-steel-200/80 bg-white/70 p-3.5">
+        <header className="mb-2.5 flex items-center gap-2">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-steel-500">
+            Voice feed
+          </span>
+        </header>
+        <p className="text-xs italic text-steel-400">
+          Spoken sentences will stream here…
+        </p>
+      </section>
+    );
   }
 
   return (
-    <div className="rounded-xl border border-gray-700/50 bg-gray-800/40 overflow-hidden">
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-gray-300">Transcript</h3>
-          <span className="rounded-full bg-gray-700/50 px-2 py-0.5 text-[11px] text-gray-500">
-            {entries.length}
-          </span>
-        </div>
-        {onDismiss && (
-          <button
-            onClick={onDismiss}
-            className="rounded-md p-1 text-gray-500 transition-colors hover:bg-gray-700/40 hover:text-gray-300"
-            title="Close transcript"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
-      </div>
+    <section className="rounded-xl border border-steel-200/80 bg-white/70 p-3.5">
+      <header className="mb-2.5 flex items-center gap-2">
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-azure-500 opacity-60" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-azure-500" />
+        </span>
+        <span className="font-mono text-[10px] uppercase tracking-widest text-steel-500">
+          Voice feed
+        </span>
+        <span className="ml-auto rounded-full bg-white/80 px-2 py-0.5 font-mono text-[10px] text-steel-500 ring-1 ring-steel-300">
+          {entries.length}
+        </span>
+      </header>
 
-      <div ref={scrollRef} className="px-4 pb-4 space-y-1.5 max-h-48 overflow-y-auto scroll-smooth">
+      <div
+        ref={scrollRef}
+        className="max-h-48 space-y-1.5 overflow-y-auto scroll-smooth pr-1"
+      >
         {visible.map((entry, idx) => (
           <p
             key={entry.id}
-            className="transcript-entry text-xs leading-relaxed text-gray-400"
-            style={{ opacity: 0.4 + (idx / visible.length) * 0.6 }}
+            className="transcript-entry border-l-2 border-azure-500/40 pl-2.5 text-xs leading-relaxed text-steel-600"
+            style={{ opacity: 0.45 + (idx / visible.length) * 0.55 }}
           >
             {entry.text}
           </p>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

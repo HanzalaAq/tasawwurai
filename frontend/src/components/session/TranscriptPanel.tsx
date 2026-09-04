@@ -1,7 +1,8 @@
 /**
- * TranscriptPanel — displays a scrollable history of teacher speech.
+ * TranscriptPanel — scrollable history of teacher speech segments.
  *
- * Shows finalized transcripts with timestamps and smooth auto-scroll.
+ * Shows finalized transcripts with timestamps, interim styling for
+ * in-flight segments, and smooth auto-scroll.
  */
 
 "use client";
@@ -39,49 +40,53 @@ export function TranscriptPanel({ entries }: Props) {
 
   if (entries.length === 0) {
     return (
-      <div className="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
-          Transcript
-        </h3>
-        <p className="text-xs text-gray-600 italic">
-          Teacher speech will appear here&hellip;
+      <section className="rounded-xl border border-steel-200/80 bg-white/70 p-3.5">
+        <header className="mb-2.5 flex items-center justify-between">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-steel-500">
+            Transcript
+          </span>
+        </header>
+        <p className="text-xs italic text-steel-400">
+          Server transcript segments will appear here&hellip;
         </p>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="rounded-xl border border-gray-700/50 bg-gray-800/40 p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+    <section className="rounded-xl border border-steel-200/80 bg-white/70 p-3.5">
+      <header className="mb-2.5 flex items-center justify-between">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-steel-500">
           Transcript
-        </h3>
-        <span className="text-[10px] text-gray-600">{entries.length} segment{entries.length !== 1 ? "s" : ""}</span>
-      </div>
+        </span>
+        <span className="font-mono text-[10px] text-steel-400">
+          {entries.length} segment{entries.length !== 1 ? "s" : ""}
+        </span>
+      </header>
+
       <div ref={scrollRef} className="max-h-56 space-y-2.5 overflow-y-auto scroll-smooth pr-1">
-        {entries.map((entry, idx) => (
-          <div
-            key={entry.id}
-            className="transcript-entry group flex gap-2"
-            style={{ animationDelay: `${Math.min(idx * 30, 300)}ms` }}
-          >
-            <span className="mt-1 shrink-0 text-[10px] tabular-nums text-gray-600">
+        {entries.map((entry) => (
+          <div key={entry.id} className="transcript-entry flex gap-2.5">
+            <span className="mt-0.5 shrink-0 font-mono text-[10px] tabular-nums text-steel-400">
               {formatTime(entry.timestamp)}
             </span>
             <div className="min-w-0 flex-1">
               <p
                 className={`text-sm leading-relaxed ${
                   entry.is_final
-                    ? "text-gray-200"
-                    : "text-gray-400 italic"
+                    ? "text-dusk-600"
+                    : "text-steel-500 italic"
                 }`}
               >
                 {entry.text}
+                {!entry.is_final && (
+                  <span className="interim-cursor ml-1 inline-block h-3.5 w-[2px] translate-y-0.5 bg-azure-600" />
+                )}
               </p>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

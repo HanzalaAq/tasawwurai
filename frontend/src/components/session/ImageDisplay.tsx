@@ -74,20 +74,23 @@ export function ImageDisplay({ command, onDismiss }: Props) {
   return (
     <div className="flex h-full flex-col">
       {/* Header bar */}
-      <div className="flex items-center justify-between border-b border-gray-700/50 px-5 py-2.5">
-        <div className="flex items-center gap-3">
-          <span className="rounded-full bg-emerald-500/20 px-3 py-0.5 text-xs font-semibold text-emerald-300">
+      <div className="flex items-center justify-between border-b border-steel-200/80 px-5 py-2.5">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-steel-500/10 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-steel-700 ring-1 ring-steel-500/30">
+            <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
             AI Image
           </span>
-          <span className="text-xs text-gray-500">
+          <span className="truncate font-mono text-[10px] uppercase tracking-wider text-steel-400">
             {command.subject} / {command.concept}
           </span>
         </div>
         {isLoadingDone && (
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             <button
               onClick={() => window.open(command.image_url, "_blank")}
-              className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-700/40 hover:text-gray-300"
+              className="rounded-md p-1.5 text-steel-400 transition-colors hover:bg-steel-500/10 hover:text-dusk-700"
               title="Open in new tab"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -96,7 +99,7 @@ export function ImageDisplay({ command, onDismiss }: Props) {
             </button>
             <button
               onClick={() => setIsZoomed(true)}
-              className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-700/40 hover:text-gray-300"
+              className="rounded-md p-1.5 text-steel-400 transition-colors hover:bg-steel-500/10 hover:text-dusk-700"
               title="View fullscreen"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -108,7 +111,7 @@ export function ImageDisplay({ command, onDismiss }: Props) {
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-700/40 hover:text-gray-300"
+            className="rounded-md p-1.5 text-steel-400 transition-colors hover:bg-steel-500/10 hover:text-dusk-700"
             title="Close image"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -119,23 +122,28 @@ export function ImageDisplay({ command, onDismiss }: Props) {
       </div>
 
       {/* Image area */}
-      <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-gray-900/40 p-4">
+      <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-mist-200/60 p-4">
         {/* Loading overlay with staged progress */}
         {isLoading && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-gray-900/80">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-mist-50/85 backdrop-blur-sm">
             {/* Animated spinner */}
             <div className="relative h-16 w-16">
-              <div className="absolute inset-0 animate-spin rounded-full border-4 border-gray-700 border-t-emerald-500" />
-              <div className="absolute inset-2 animate-spin rounded-full border-4 border-gray-700 border-t-blue-500" style={{ animationDirection: "reverse", animationDuration: "1.5s" }} />
+              <div className="absolute inset-0 animate-spin rounded-full border-4 border-steel-200 border-t-azure-600" />
+              <div className="absolute inset-2 animate-spin rounded-full border-4 border-steel-200 border-t-steel-500" style={{ animationDirection: "reverse", animationDuration: "1.5s" }} />
+              <span className="absolute inset-0 flex items-center justify-center">
+                <svg className="h-5 w-5 text-azure-700" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
+              </span>
             </div>
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-300">{STAGE_LABELS[stage]}</p>
-              <p className="mt-1 text-xs text-gray-600">This may take 5–15 seconds</p>
+              <p className="text-sm font-medium text-dusk-700">{STAGE_LABELS[stage]}</p>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-steel-400">This may take 5–15 seconds</p>
             </div>
             {/* Progress bar */}
-            <div className="h-1 w-48 overflow-hidden rounded-full bg-gray-700">
+            <div className="h-1 w-48 overflow-hidden rounded-full bg-steel-500/15">
               <div
-                className="image-progress-bar h-full rounded-full bg-gradient-to-r from-emerald-500 to-blue-500"
+                className="image-progress-bar h-full rounded-full bg-gradient-to-r from-azure-700 to-azure-400"
                 style={{ animationDuration: stage === "connecting" ? "3s" : "12s" }}
               />
             </div>
@@ -145,20 +153,20 @@ export function ImageDisplay({ command, onDismiss }: Props) {
         {/* Error state */}
         {hasError && (
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-500/15 border border-red-500/20">
-              <svg className="h-7 w-7 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-rose-500/25 bg-rose-500/10">
+              <svg className="h-7 w-7 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
               </svg>
             </div>
             <div>
-              <p className="text-sm font-medium text-red-300">Failed to generate image</p>
-              <p className="mt-1 max-w-xs text-xs text-gray-500">
+              <p className="text-sm font-medium text-rose-700">Failed to generate image</p>
+              <p className="mt-1 max-w-xs text-xs leading-relaxed text-steel-500">
                 The image service may be temporarily unavailable.
               </p>
             </div>
             <button
               onClick={handleRetry}
-              className="mt-1 flex items-center gap-2 rounded-lg bg-gray-700/50 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-600/50"
+              className="mt-1 flex items-center gap-2 rounded-lg border border-steel-300 bg-white px-4 py-2 text-sm font-medium text-dusk-700 transition-all hover:bg-mist-200 active:scale-[0.98]"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
@@ -185,20 +193,20 @@ export function ImageDisplay({ command, onDismiss }: Props) {
       </div>
 
       {/* Caption bar */}
-      <div className="border-t border-gray-700/30 px-5 py-2.5">
+      <div className="border-t border-steel-200/80 px-5 py-2.5">
         <button
           onClick={() => setCaptionExpanded(!captionExpanded)}
-          className="w-full text-left"
+          className="group w-full text-left"
         >
           <div className="flex items-center gap-2">
             <svg
-              className={`h-3 w-3 shrink-0 text-gray-600 transition-transform ${captionExpanded ? "rotate-90" : ""}`}
+              className={`h-3 w-3 shrink-0 text-steel-400 transition-transform ${captionExpanded ? "rotate-90" : ""}`}
               fill="currentColor"
               viewBox="0 0 24 24"
             >
               <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
             </svg>
-            <p className={`text-xs text-gray-500 ${captionExpanded ? "" : "line-clamp-1"}`}>
+            <p className={`text-xs leading-relaxed text-steel-500 transition-colors group-hover:text-steel-600 ${captionExpanded ? "" : "line-clamp-1"}`}>
               {command.prompt}
             </p>
           </div>

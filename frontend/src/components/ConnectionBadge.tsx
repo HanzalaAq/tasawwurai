@@ -1,16 +1,18 @@
 /**
- * ConnectionStatus badge.
+ * ConnectionBadge — connection state indicator.
  *
- * Shows the current WebSocket connection state with a colored indicator.
+ * Now a thin wrapper over the shared StatusChip language so every
+ * status in the app speaks the same visual dialect.
  */
 
 import type { ConnectionStatus } from "@/types";
+import { StatusChip } from "@/components/ui/StatusChip";
 
-const STATUS_CONFIG: Record<ConnectionStatus, { label: string; color: string }> = {
-  connecting: { label: "Connecting…", color: "bg-yellow-400" },
-  connected: { label: "Connected", color: "bg-green-400" },
-  disconnected: { label: "Disconnected", color: "bg-gray-400" },
-  error: { label: "Error", color: "bg-red-400" },
+const STATUS_VARIANT: Record<ConnectionStatus, Parameters<typeof StatusChip>[0]["variant"]> = {
+  connecting: "connecting",
+  connected: "connected",
+  disconnected: "disconnected",
+  error: "error",
 };
 
 interface Props {
@@ -18,12 +20,5 @@ interface Props {
 }
 
 export function ConnectionBadge({ status }: Props) {
-  const { label, color } = STATUS_CONFIG[status];
-
-  return (
-    <div className="flex items-center gap-2 text-sm text-gray-300">
-      <span className={`inline-block h-2.5 w-2.5 rounded-full ${color}`} />
-      {label}
-    </div>
-  );
+  return <StatusChip variant={STATUS_VARIANT[status]} size="xs" />;
 }
